@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Digimagz</string>
+
+    <string name="facebook_application_id" translatable="false">733494387113231</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb733494387113231</string>
+
+    <string name="api_url">http://digimagz.kristomoyo.com/api/</string>
+
+</resources>
