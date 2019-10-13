@@ -129,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.home_menu:
+                    ((VideoFragment) fragmentVideo).pauseVideo();
                     fragmentManager.beginTransaction().hide(fragmentActive).show(fragmentHome).commit();
                     if (fragmentActive == fragmentHome) {
                         ((HomeFragment) fragmentHome).scrollUp();
@@ -140,16 +141,19 @@ public class MainActivity extends AppCompatActivity {
                     fragmentManager.beginTransaction().hide(fragmentActive).show(fragmentVideo).commit();
                     if (fragmentActive == fragmentVideo) {
                         ((VideoFragment) fragmentVideo).scrollUp();
+                        ((VideoFragment) fragmentVideo).resumeVideo();
                     }
                     fragmentActive = fragmentVideo;
                     doubleBackToExit = false;
                     return true;
                 case R.id.explore_menu:
+                    ((VideoFragment) fragmentVideo).pauseVideo();
                     fragmentManager.beginTransaction().hide(fragmentActive).show(fragmentSearch).commit();
                     fragmentActive = fragmentSearch;
                     doubleBackToExit = false;
                     return true;
                 case R.id.login_profile_menu:
+                    ((VideoFragment) fragmentVideo).pauseVideo();
                     if (firebaseUser != null) {
                         fragmentManager.beginTransaction().hide(fragmentActive).show(fragmentProfile).commit();
                         fragmentActive = fragmentProfile;

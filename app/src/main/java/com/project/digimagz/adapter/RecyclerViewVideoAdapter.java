@@ -45,6 +45,8 @@ public class RecyclerViewVideoAdapter extends RecyclerView.Adapter<RecyclerViewV
     private SimpleDateFormat simpleDateFormat;
     private Date date;
 
+    private boolean isPaused = false;
+
     public RecyclerViewVideoAdapter(ArrayList<YoutubeDataModel> youtubeDataModelArrayList, Context context) {
         this.youtubeDataModelArrayList = youtubeDataModelArrayList;
         this.context = context;
@@ -86,6 +88,11 @@ public class RecyclerViewVideoAdapter extends RecyclerView.Adapter<RecyclerViewV
                     public void onReady(@NotNull YouTubePlayer youTubePlayer) {
                         super.onReady(youTubePlayer);
                         youTubePlayer.loadVideo(dataModel.getVideoId(), 0);
+                        if(isPaused){
+                            youTubePlayer.pause();
+                        }else {
+                            youTubePlayer.play();
+                        }
                     }
                 });
             }
@@ -104,6 +111,16 @@ public class RecyclerViewVideoAdapter extends RecyclerView.Adapter<RecyclerViewV
                 }
             }
         });
+    }
+
+    public void pause(){
+        isPaused = true;
+        notifyDataSetChanged();
+    }
+
+    public void resume(){
+        isPaused = false;
+        notifyDataSetChanged();
     }
 
     @Override

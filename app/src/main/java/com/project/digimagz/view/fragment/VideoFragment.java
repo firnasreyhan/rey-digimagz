@@ -127,4 +127,16 @@ public class VideoFragment extends Fragment {
         mShimmerViewContainer.stopShimmer();
         super.onPause();
     }
+
+    public void pauseVideo(){
+        if(recyclerViewVideoAdapter != null){
+            recyclerViewVideoAdapter.pause();
+        }
+    }
+
+    public void resumeVideo(){
+        if(recyclerViewVideoAdapter != null){
+            recyclerViewVideoAdapter.resume();
+        }
+    }
 }
