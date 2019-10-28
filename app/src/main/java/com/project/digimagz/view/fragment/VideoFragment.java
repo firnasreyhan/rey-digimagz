@@ -116,6 +116,18 @@ public class VideoFragment extends Fragment {
         nestedScrollViewVideo.smoothScrollTo(0,0);
     }
 
+//    public void pauseVideo(){
+//        if(recyclerViewVideoAdapter != null){
+//            recyclerViewVideoAdapter.pause();
+//        }
+//    }
+//
+//    public void resumeVideo(){
+//        if(recyclerViewVideoAdapter != null){
+//            recyclerViewVideoAdapter.resume();
+//        }
+//    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -126,17 +138,5 @@ public class VideoFragment extends Fragment {
     public void onPause() {
         mShimmerViewContainer.stopShimmer();
         super.onPause();
-    }
-
-    public void pauseVideo(){
-        if(recyclerViewVideoAdapter != null){
-            recyclerViewVideoAdapter.pause();
-        }
-    }
-
-    public void resumeVideo(){
-        if(recyclerViewVideoAdapter != null){
-            recyclerViewVideoAdapter.resume();
-        }
     }
 }

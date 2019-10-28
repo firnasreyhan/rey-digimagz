@@ -6,9 +6,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.Display;
+import android.view.WindowManager;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.util.Log;
 import android.view.View;
@@ -42,8 +50,9 @@ public class DetailNewsActivity extends AppCompatActivity {
     private FirebaseUser firebaseUser;
 
     private ImageView imageViewCover;
-    private TextView textViewTitle, textViewDate, textViewContent, textViewCountComment, textViewLike, textViewCategory;
+    private TextView textViewTitle, textViewDate, textViewContent, textViewCountComment, textViewLike, textViewCategory, textViewEditor, textViewVerificator;
     private ImageButton imageButtonSendComment, imageButtonLike, imageButtonDislike;
+    private WebView webViewDetailNews;
     private TextInputEditText textInputEditTextComment;
     private RecyclerView recyclerViewComment, recyclerViewNews;
     private MaterialToolbar materialToolbar;
@@ -55,7 +64,7 @@ public class DetailNewsActivity extends AppCompatActivity {
 
     private SimpleDateFormat simpleDateFormat;
     private Date date;
-    private String newsImage;
+    private String newsImage, dataHtml;
 
     private InitRetrofit initRetrofit, initRetrofitComment, initRetrofitNews, initRetrofitLike;
 
@@ -86,6 +95,8 @@ public class DetailNewsActivity extends AppCompatActivity {
         textViewCountComment = findViewById(R.id.textViewCountComment);
         textViewLike = findViewById(R.id.textViewLike);
         textViewCategory = findViewById(R.id.textViewCategory);
+        textViewEditor = findViewById(R.id.textViewEditor);
+        textViewVerificator = findViewById(R.id.textViewVerificator);
         imageButtonSendComment = findViewById(R.id.imageButtonSendComment);
         imageButtonLike = findViewById(R.id.imageButtonLike);
         imageButtonDislike = findViewById(R.id.imageButtonDislike);
@@ -93,6 +104,22 @@ public class DetailNewsActivity extends AppCompatActivity {
         recyclerViewComment = findViewById(R.id.recyclerViewComment);
         recyclerViewNews = findViewById(R.id.recyclerViewNews);
         linearLayoutShare = findViewById(R.id.linearLayoutShare);
+        webViewDetailNews = findViewById(R.id.webViewDetailNews);
+        //webViewDetailNews.setBackgroundColor(Color.TRANSPARENT);
+
+        dataHtml = "<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"></head>";
+        dataHtml = dataHtml + "<body width=\"100%\" height=\"auto\">" + newsModel.getContentNews()  + "</body></html>";
+
+        webViewDetailNews.getSettings().setJavaScriptEnabled(true);
+        webViewDetailNews.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        webViewDetailNews.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        webViewDetailNews.getSettings().setPluginState(WebSettings.PluginState.ON);
+        webViewDetailNews.getSettings().setSupportMultipleWindows(true);
+        webViewDetailNews.setWebChromeClient(new WebChromeClient());
+        webViewDetailNews.setHorizontalScrollBarEnabled(false);
+        webViewDetailNews.getSettings().setLoadWithOverviewMode(true);
+        webViewDetailNews.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        webViewDetailNews.getSettings().setBuiltInZoomControls(false);
 
         try {
             date = simpleDateFormat.parse(newsModel.getDateNews());
@@ -110,6 +137,16 @@ public class DetailNewsActivity extends AppCompatActivity {
         Glide.with(DetailNewsActivity.this)
                 .load(newsImage)
                 .into(imageViewCover);
+        webViewDetailNews.loadDataWithBaseURL(null, dataHtml,
+                "text/html", "UTF-8", null);
+        webViewDetailNews.setWebViewClient(new WebViewClient());
+
+        if (newsModel.getEditor() != null) {
+            textViewEditor.setText(newsModel.getEditor());
+        }
+        if (newsModel.getVerificator() != null) {
+            textViewVerificator.setText(newsModel.getVerificator());
+        }
 
         if (firebaseUser != null) {
             imageButtonLike.setEnabled(true);
@@ -190,19 +227,19 @@ public class DetailNewsActivity extends AppCompatActivity {
                     }
                 }
             });
-
-            linearLayoutShare.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    openShare(newsModel);
-                }
-            });
         } else {
             imageButtonLike.setEnabled(false);
             imageButtonDislike.setEnabled(false);
             imageButtonSendComment.setEnabled(false);
             textInputEditTextComment.setEnabled(false);
         }
+
+        linearLayoutShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openShare(newsModel);
+            }
+        });
     }
 
     private void showRecyclerListViewComment(ArrayList<CommentModel> commentModelArrayList) {

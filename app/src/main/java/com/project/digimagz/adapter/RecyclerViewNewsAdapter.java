@@ -39,7 +39,6 @@ public class RecyclerViewNewsAdapter extends RecyclerView.Adapter<RecyclerViewNe
 
     private int size;
 
-    public static int checkLike;
     private InitRetrofit initRetrofitLike;
 
     public RecyclerViewNewsAdapter(ArrayList<NewsModel> newsModelArrayList, int size) {

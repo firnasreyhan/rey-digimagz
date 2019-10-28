@@ -13,8 +13,11 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.project.digimagz.Constant;
 import com.project.digimagz.R;
+import com.project.digimagz.api.InitRetrofit;
 import com.project.digimagz.api.NotifApi;
 import com.project.digimagz.model.NotifValue;
+
+import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -24,12 +27,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SplashActivity extends Activity {
 
-
+    private InitRetrofit initRetrofit;
+    private ArrayList<Integer> list = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        initRetrofit = new InitRetrofit();
+        initRetrofit.getStatusCodeFromServer();
 
         if (getIntent().getExtras() != null){
             int id = getIntent().getIntExtra("id", 0);
@@ -61,12 +68,25 @@ public class SplashActivity extends Activity {
                 });
             }
         });
+
+        initRetrofit.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
+            @Override
+            public void onSuccessGetData(ArrayList arrayList) {
+                list.addAll(arrayList);
+            }
+        });
+
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                finish();
+                if (list.get(0) != 0) {
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                    finish();
+                } else {
+                    startActivity(new Intent(getApplicationContext(), ErrorActivity.class));
+                    finish();
+                }
             }
         }, 2500);
     }

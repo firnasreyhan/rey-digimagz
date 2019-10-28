@@ -67,6 +67,10 @@ public interface ApiInterface {
 
     @FormUrlEncoded
     @HTTP(method = "PUT", path = "user/index_put", hasBody = true)
-    Call<LikeModel> putUser(@Field("email") String email, @Field("name") String name, @Field("pic_url") String pic_url);
+    Call<DefaultStructureUser> putUserName(@Field("email") String email, @Field("name") String name);
+
+    @FormUrlEncoded
+    @HTTP(method = "PUT", path = "user/index_put", hasBody = true)
+    Call<DefaultStructureUser> putUserPhoto(@Field("email") String email, @Field("pic_url") String pic_url);
 
 }

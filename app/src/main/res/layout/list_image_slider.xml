@@ -31,7 +31,7 @@
 
             <TextView
                 android:id="@+id/textViewTitle"
-                android:layout_width="320dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/white"
                 android:layout_marginBottom="5dp"

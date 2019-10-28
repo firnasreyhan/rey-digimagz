@@ -26,9 +26,15 @@ public class NewsModel implements Serializable {
     private int likes;
     @SerializedName("COMMENTS")
     private int comments;
+    @SerializedName("EDITOR")
+    private String editor;
+    @SerializedName("VERIFICATOR")
+    private String verificator;
+    @SerializedName("STATUS")
+    private String status;
     private int checkLike;
 
-    public NewsModel(String idNews, String nameCategory, String titleNews, String contentNews, int viewsCount, int sharesCount, String dateNews, String newsImage, int likes, int comments, int checkLike) {
+    public NewsModel(String idNews, String nameCategory, String titleNews, String contentNews, int viewsCount, int sharesCount, String dateNews, String newsImage, int likes, int comments, String editor, String verificator, String status, int checkLike) {
         this.idNews = idNews;
         this.nameCategory = nameCategory;
         this.titleNews = titleNews;
@@ -39,14 +45,9 @@ public class NewsModel implements Serializable {
         this.newsImage = newsImage;
         this.likes = likes;
         this.comments = comments;
-        this.checkLike = checkLike;
-    }
-
-    public int getCheckLike() {
-        return checkLike;
-    }
-
-    public void setCheckLike(int checkLike) {
+        this.editor = editor;
+        this.verificator = verificator;
+        this.status = status;
         this.checkLike = checkLike;
     }
 
@@ -128,5 +129,37 @@ public class NewsModel implements Serializable {
 
     public void setComments(int comments) {
         this.comments = comments;
+    }
+
+    public String getEditor() {
+        return editor;
+    }
+
+    public void setEditor(String editor) {
+        this.editor = editor;
+    }
+
+    public String getVerificator() {
+        return verificator;
+    }
+
+    public void setVerificator(String verificator) {
+        this.verificator = verificator;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getCheckLike() {
+        return checkLike;
+    }
+
+    public void setCheckLike(int checkLike) {
+        this.checkLike = checkLike;
     }
 }

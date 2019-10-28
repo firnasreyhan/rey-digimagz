@@ -28,6 +28,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 import com.project.digimagz.R;
 import com.project.digimagz.model.NewsModel;
 import com.project.digimagz.model.YoutubeDataModel;
+import com.project.digimagz.view.activity.DetailVideoActivity;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -45,7 +46,7 @@ public class RecyclerViewVideoAdapter extends RecyclerView.Adapter<RecyclerViewV
     private SimpleDateFormat simpleDateFormat;
     private Date date;
 
-    private boolean isPaused = false;
+//    private boolean isPaused = false;
 
     public RecyclerViewVideoAdapter(ArrayList<YoutubeDataModel> youtubeDataModelArrayList, Context context) {
         this.youtubeDataModelArrayList = youtubeDataModelArrayList;
@@ -81,20 +82,24 @@ public class RecyclerViewVideoAdapter extends RecyclerView.Adapter<RecyclerViewV
         holder.frameLayoutVideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                holder.frameLayoutVideo.setVisibility(View.GONE);
-                holder.youTubePlayerView.setVisibility(View.VISIBLE);
-                holder.youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
-                    @Override
-                    public void onReady(@NotNull YouTubePlayer youTubePlayer) {
-                        super.onReady(youTubePlayer);
-                        youTubePlayer.loadVideo(dataModel.getVideoId(), 0);
-                        if(isPaused){
-                            youTubePlayer.pause();
-                        }else {
-                            youTubePlayer.play();
-                        }
-                    }
-                });
+                Intent intent = new Intent(view.getContext(), DetailVideoActivity.class);
+                intent.putExtra("youtubeId", dataModel.getVideoId());
+                view.getContext().startActivity(intent);
+//                holder.frameLayoutVideo.setVisibility(View.GONE);
+//                holder.youTubePlayerView.setVisibility(View.VISIBLE);
+//                holder.youTubePlayerView.enterFullScreen();
+//                holder.youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
+//                    @Override
+//                    public void onReady(@NotNull YouTubePlayer youTubePlayer) {
+//                        super.onReady(youTubePlayer);
+//                        youTubePlayer.loadVideo(dataModel.getVideoId(), 0);
+//                        if(isPaused){
+//                            youTubePlayer.pause();
+//                        }else {
+//                            youTubePlayer.play();
+//                        }
+//                    }
+//                });
             }
         });
 
@@ -113,15 +118,15 @@ public class RecyclerViewVideoAdapter extends RecyclerView.Adapter<RecyclerViewV
         });
     }
 
-    public void pause(){
-        isPaused = true;
-        notifyDataSetChanged();
-    }
-
-    public void resume(){
-        isPaused = false;
-        notifyDataSetChanged();
-    }
+//    public void pause(){
+//        isPaused = true;
+//        notifyDataSetChanged();
+//    }
+//
+//    public void resume(){
+//        isPaused = false;
+//        notifyDataSetChanged();
+//    }
 
     @Override
     public int getItemCount() {

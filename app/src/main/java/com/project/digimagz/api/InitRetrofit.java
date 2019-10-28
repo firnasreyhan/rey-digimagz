@@ -43,16 +43,12 @@ public class InitRetrofit {
         apiInterface.getNews().enqueue(new Callback<DefaultStructureNews>() {
             @Override
             public void onResponse(Call<DefaultStructureNews> call, Response<DefaultStructureNews> response) {
-                if(response.isSuccessful()) {
-                    ArrayList<NewsModel> list = response.body().getData();
-//                    if (!list.isEmpty()) {
-//                        onRetrofitSuccess.onSuccessGetData(list);
-//                    }else {
-//                        Log.e("getNewsFromApi", "Empty List");
-//                    }
-                    onRetrofitSuccess.onSuccessGetData(list);
+                ArrayList<NewsModel> list = new ArrayList<>();
+                if(response.code() == 200) {
+                    list.addAll(response.body().getData());
                     Log.e("getNewsFromApi", "Empty List");
                 }
+                onRetrofitSuccess.onSuccessGetData(list);
             }
 
             @Override
@@ -66,16 +62,12 @@ public class InitRetrofit {
         apiInterface.getNewsSearch(params).enqueue(new Callback<DefaultStructureNews>() {
             @Override
             public void onResponse(Call<DefaultStructureNews> call, Response<DefaultStructureNews> response) {
-                if(response.isSuccessful()) {
-                    ArrayList<NewsModel> list = response.body().getData();
-//                    if (!list.isEmpty()) {
-//                        onRetrofitSuccess.onSuccessGetData(list);
-//                    }else {
-//                        Log.e("getNewsWithParams", "Empty List");
-//                    }
-                    onRetrofitSuccess.onSuccessGetData(list);
+                ArrayList<NewsModel> list = new ArrayList<>();
+                if(response.code() == 200) {
+                    list.addAll(response.body().getData());
                     Log.e("getNewsWithParams", "Empty List");
                 }
+                onRetrofitSuccess.onSuccessGetData(list);
             }
 
             @Override
@@ -89,16 +81,12 @@ public class InitRetrofit {
         apiInterface.getNewsTrending("yes").enqueue(new Callback<DefaultStructureNews>() {
             @Override
             public void onResponse(Call<DefaultStructureNews> call, Response<DefaultStructureNews> response) {
-                if(response.isSuccessful()) {
-                    ArrayList<NewsModel> list = response.body().getData();
-//                    if (!list.isEmpty()) {
-//                        onRetrofitSuccess.onSuccessGetData(list);
-//                    }else {
-//                        Log.e("getNewsWithParams", "Empty List");
-//                    }
-                    onRetrofitSuccess.onSuccessGetData(list);
+                ArrayList<NewsModel> list = new ArrayList<>();
+                if(response.code() == 200) {
+                    list.addAll(response.body().getData());
                     Log.e("getNewsTrendingFromApi", "Empty List");
                 }
+                onRetrofitSuccess.onSuccessGetData(list);
             }
 
             @Override
@@ -112,9 +100,12 @@ public class InitRetrofit {
         apiInterface.getNewsRelated(idNews).enqueue(new Callback<DefaultStructureNews>() {
             @Override
             public void onResponse(Call<DefaultStructureNews> call, Response<DefaultStructureNews> response) {
-                ArrayList<NewsModel> list = response.body().getData();
+                ArrayList<NewsModel> list = new ArrayList<>();
+                if(response.code() == 200) {
+                    list.addAll(response.body().getData());
+                    Log.e("getNewsRelatedFromApi", "Empty List");
+                }
                 onRetrofitSuccess.onSuccessGetData(list);
-                Log.e("getNewsRelatedFromApi", "Empty List");
             }
 
             @Override
@@ -128,14 +119,12 @@ public class InitRetrofit {
         apiInterface.getComment(idNews).enqueue(new Callback<DefaultStructureComment>() {
             @Override
             public void onResponse(Call<DefaultStructureComment> call, Response<DefaultStructureComment> response) {
-                ArrayList<CommentModel> list = response.body().getData();
-//                if (!list.isEmpty()) {
-//                    onRetrofitSuccess.onSuccessGetData(list);
-//                } else {
-//                    Log.e("getCommentFromApi", "Empty List");
-//                }
+                ArrayList<CommentModel> list = new ArrayList<>();
+                if(response.code() == 200) {
+                    list.addAll(response.body().getData());
+                    Log.e("getCommentFromApi", "Empty List");
+                }
                 onRetrofitSuccess.onSuccessGetData(list);
-                Log.e("getCommentFromApi", "Empty List");
             }
 
             @Override
@@ -200,7 +189,10 @@ public class InitRetrofit {
         apiInterface.getStory().enqueue(new Callback<DefaultStructureStory>() {
             @Override
             public void onResponse(Call<DefaultStructureStory> call, Response<DefaultStructureStory> response) {
-                ArrayList<StoryModel> list = response.body().getData();
+                ArrayList<StoryModel> list = new ArrayList<>();
+                if(response.code() == 200) {
+                    list.addAll(response.body().getData());
+                }
                 onRetrofitSuccess.onSuccessGetData(list);
             }
 
@@ -215,7 +207,10 @@ public class InitRetrofit {
         apiInterface.getNewsCoverStory(id).enqueue(new Callback<DefaultStructureNewsCoverStory>() {
             @Override
             public void onResponse(Call<DefaultStructureNewsCoverStory> call, Response<DefaultStructureNewsCoverStory> response) {
-                ArrayList<NewsCoverStoryModel> list = response.body().getData();
+                ArrayList<NewsCoverStoryModel> list = new ArrayList<>();
+                if (response.code() == 200) {
+                    list.addAll(response.body().getData());
+                }
                 onRetrofitSuccess.onSuccessGetData(list);
             }
 
@@ -230,28 +225,16 @@ public class InitRetrofit {
         apiInterface.getSlider().enqueue(new Callback<DefaultStructureNews>() {
             @Override
             public void onResponse(Call<DefaultStructureNews> call, Response<DefaultStructureNews> response) {
-                ArrayList<NewsModel> list = response.body().getData();
-                onRetrofitSuccess.onSuccessGetData(list);
+                ArrayList<NewsModel> list = new ArrayList<>();
+                if (response.code() == 200) {
+                    list.addAll(response.body().getData());
+                    onRetrofitSuccess.onSuccessGetData(list);
+                }
             }
 
             @Override
             public void onFailure(Call<DefaultStructureNews> call, Throwable t) {
                 Log.e("getSliderFromApi", t.getMessage());
-            }
-        });
-    }
-
-    public void getUserFromApi(String email) {
-        apiInterface.getUser(email).enqueue(new Callback<DefaultStructureUser>() {
-            @Override
-            public void onResponse(Call<DefaultStructureUser> call, Response<DefaultStructureUser> response) {
-                ArrayList<UserModel> list = response.body().getData();
-                onRetrofitSuccess.onSuccessGetData(list);
-            }
-
-            @Override
-            public void onFailure(Call<DefaultStructureUser> call, Throwable t) {
-                Log.e("getUserFromApi", t.getMessage());
             }
         });
     }
@@ -275,32 +258,40 @@ public class InitRetrofit {
         });
     }
 
-    public void putUserToApi(String email, String name, String pic_url) {
-        apiInterface.putUser(email, name, pic_url).enqueue(new Callback<LikeModel>() {
-            @Override
-            public void onResponse(Call<LikeModel> call, Response<LikeModel> response) {
-                Log.e("putUserToApi", "Success");
-            }
-
-            @Override
-            public void onFailure(Call<LikeModel> call, Throwable t) {
-                Log.e("putUserToApi", t.getMessage());
-            }
-        });
-    }
 
     public void getLikeFromApi(String idNews, String email) {
         apiInterface.getLikes(idNews, email).enqueue(new Callback<DefaultStructureLike>() {
             @Override
             public void onResponse(Call<DefaultStructureLike> call, Response<DefaultStructureLike> response) {
                 ArrayList<String> list = new ArrayList<String>();
-                list.add(response.body().getData());
+                if (response.code() == 200) {
+                    list.add(response.body().getData());
+                }
                 onRetrofitSuccess.onSuccessGetData(list);
             }
 
             @Override
             public void onFailure(Call<DefaultStructureLike> call, Throwable t) {
                 Log.e("getLikeFromApi", t.getMessage());
+            }
+        });
+    }
+
+    public void getStatusCodeFromServer() {
+        apiInterface.getNews().enqueue(new Callback<DefaultStructureNews>() {
+            @Override
+            public void onResponse(Call<DefaultStructureNews> call, Response<DefaultStructureNews> response) {
+                ArrayList<Integer> list = new ArrayList<Integer>();
+                list.add(response.code());
+                onRetrofitSuccess.onSuccessGetData(list);
+            }
+
+            @Override
+            public void onFailure(Call<DefaultStructureNews> call, Throwable t) {
+                ArrayList<Integer> list = new ArrayList<Integer>();
+                list.add(0);
+                onRetrofitSuccess.onSuccessGetData(list);
+                Log.e("serverDigi", t.getMessage());
             }
         });
     }

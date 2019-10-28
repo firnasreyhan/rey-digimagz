@@ -71,7 +71,7 @@ public class ImageSliderAdapater extends PagerAdapter {
         }
 
         Glide.with(context)
-                .load("http://digimagz.kristomoyo.com/images/news/" + newsModel.getNewsImage())
+                .load("http://digimon.kristomoyo.com/images/news/" + newsModel.getNewsImage())
                 .into(imageView);
 
         textViewTitle.setText(newsModel.getTitleNews());

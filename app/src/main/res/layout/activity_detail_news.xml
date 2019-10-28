@@ -114,8 +114,68 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:lineSpacingExtra="10dp"
-                android:text ="-"
-                android:textColor="@android:color/black" />
+                android:text="-"
+                android:textColor="@android:color/black"
+                android:visibility="gone" />
+
+            <WebView
+                android:id="@+id/webViewDetailNews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                tools:ignore="WebViewLayout" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_gravity="left"
+                    android:layout_marginBottom="10dp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_edit"
+                        android:layout_marginRight="7.5dp"/>
+
+                    <TextView
+                        android:id="@+id/textViewEditor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_gravity="right"
+                    android:layout_marginBottom="10dp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_verified"
+                        android:layout_marginRight="7.5dp"/>
+
+                    <TextView
+                        android:id="@+id/textViewVerificator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
+                </LinearLayout>
+
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

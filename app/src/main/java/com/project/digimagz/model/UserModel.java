@@ -12,12 +12,18 @@ public class UserModel {
     private String urlPic;
     @SerializedName("LAST_LOGIN")
     private String lastLogin;
+    @SerializedName("UID")
+    private String UID;
+    @SerializedName("DISABLED")
+    private String disabled;
 
-    public UserModel(String email, String userName, String urlPic, String lastLogin) {
+    public UserModel(String email, String userName, String urlPic, String lastLogin, String UID, String disabled) {
         this.email = email;
         this.userName = userName;
         this.urlPic = urlPic;
         this.lastLogin = lastLogin;
+        this.disabled = disabled;
+        this.UID = UID;
     }
 
     public String getEmail() {

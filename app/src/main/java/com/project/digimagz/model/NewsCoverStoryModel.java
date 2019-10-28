@@ -10,40 +10,51 @@ public class NewsCoverStoryModel implements Serializable {
     private String idNews;
     @SerializedName("NAME_CATEGORY")
     private String nameCategory;
-    @SerializedName("CONTENT_NEWS")
-    private String contentNews;
     @SerializedName("TITLE_NEWS")
     private String titleNews;
-    @SerializedName("DATE_NEWS")
-    private String dateNews;
-    @SerializedName("NEWS_IMAGE")
-    private String newsImage;
-    @SerializedName("VIEWS_COUNT")
-    private int viewsCount;
-    @SerializedName("LIKES")
-    private int likes;
-    @SerializedName("COMMENTS")
-    private int comments;
-    @SerializedName("SHARES_COUNT")
-    private int sharesCount;
+    @SerializedName("CONTENT_NEWS")
+    private String contentNews;
     @SerializedName("ID_COVERSTORY")
     private String idCoverStory;
     @SerializedName("TITLE_COVERSTORY")
     private String titleCoverStory;
+    @SerializedName("VIEWS_COUNT")
+    private int viewsCount;
+    @SerializedName("SHARES_COUNT")
+    private int sharesCount;
+    @SerializedName("DATE_NEWS")
+    private String dateNews;
+    @SerializedName("NEWS_IMAGE")
+    private String newsImage;
+    @SerializedName("LIKES")
+    private int likes;
+    @SerializedName("COMMENTS")
+    private int comments;
+    @SerializedName("EDITOR")
+    private String editor;
+    @SerializedName("VERIFICATOR")
+    private String verificator;
+    @SerializedName("STATUS")
+    private String status;
+    private int checkLike;
 
-    public NewsCoverStoryModel(String idNews, String nameCategory, String contentNews, String titleNews, String dateNews, String newsImage, int viewsCount, int likes, int comments, int sharesCount, String idCoverStory, String titleCoverStory) {
+    public NewsCoverStoryModel(String idNews, String nameCategory, String titleNews, String contentNews, String idCoverStory, String titleCoverStory, int viewsCount, int sharesCount, String dateNews, String newsImage, int likes, int comments, String editor, String verificator, String status, int checkLike) {
         this.idNews = idNews;
         this.nameCategory = nameCategory;
-        this.contentNews = contentNews;
         this.titleNews = titleNews;
-        this.dateNews = dateNews;
-        this.newsImage = newsImage;
-        this.viewsCount = viewsCount;
-        this.likes = likes;
-        this.comments = comments;
-        this.sharesCount = sharesCount;
+        this.contentNews = contentNews;
         this.idCoverStory = idCoverStory;
         this.titleCoverStory = titleCoverStory;
+        this.viewsCount = viewsCount;
+        this.sharesCount = sharesCount;
+        this.dateNews = dateNews;
+        this.newsImage = newsImage;
+        this.likes = likes;
+        this.comments = comments;
+        this.editor = editor;
+        this.verificator = verificator;
+        this.status = status;
+        this.checkLike = checkLike;
     }
 
     public String getIdNews() {
@@ -62,6 +73,14 @@ public class NewsCoverStoryModel implements Serializable {
         this.nameCategory = nameCategory;
     }
 
+    public String getTitleNews() {
+        return titleNews;
+    }
+
+    public void setTitleNews(String titleNews) {
+        this.titleNews = titleNews;
+    }
+
     public String getContentNews() {
         return contentNews;
     }
@@ -70,12 +89,36 @@ public class NewsCoverStoryModel implements Serializable {
         this.contentNews = contentNews;
     }
 
-    public String getTitleNews() {
-        return titleNews;
+    public String getIdCoverStory() {
+        return idCoverStory;
     }
 
-    public void setTitleNews(String titleNews) {
-        this.titleNews = titleNews;
+    public void setIdCoverStory(String idCoverStory) {
+        this.idCoverStory = idCoverStory;
+    }
+
+    public String getTitleCoverStory() {
+        return titleCoverStory;
+    }
+
+    public void setTitleCoverStory(String titleCoverStory) {
+        this.titleCoverStory = titleCoverStory;
+    }
+
+    public int getViewsCount() {
+        return viewsCount;
+    }
+
+    public void setViewsCount(int viewsCount) {
+        this.viewsCount = viewsCount;
+    }
+
+    public int getSharesCount() {
+        return sharesCount;
+    }
+
+    public void setSharesCount(int sharesCount) {
+        this.sharesCount = sharesCount;
     }
 
     public String getDateNews() {
@@ -94,14 +137,6 @@ public class NewsCoverStoryModel implements Serializable {
         this.newsImage = newsImage;
     }
 
-    public int getViewsCount() {
-        return viewsCount;
-    }
-
-    public void setViewsCount(int viewsCount) {
-        this.viewsCount = viewsCount;
-    }
-
     public int getLikes() {
         return likes;
     }
@@ -118,27 +153,35 @@ public class NewsCoverStoryModel implements Serializable {
         this.comments = comments;
     }
 
-    public int getSharesCount() {
-        return sharesCount;
+    public String getEditor() {
+        return editor;
     }
 
-    public void setSharesCount(int sharesCount) {
-        this.sharesCount = sharesCount;
+    public void setEditor(String editor) {
+        this.editor = editor;
     }
 
-    public String getIdCoverStory() {
-        return idCoverStory;
+    public String getVerificator() {
+        return verificator;
     }
 
-    public void setIdCoverStory(String idCoverStory) {
-        this.idCoverStory = idCoverStory;
+    public void setVerificator(String verificator) {
+        this.verificator = verificator;
     }
 
-    public String getTitleCoverStory() {
-        return titleCoverStory;
+    public String getStatus() {
+        return status;
     }
 
-    public void setTitleCoverStory(String titleCoverStory) {
-        this.titleCoverStory = titleCoverStory;
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getCheckLike() {
+        return checkLike;
+    }
+
+    public void setCheckLike(int checkLike) {
+        this.checkLike = checkLike;
     }
 }

@@ -11,8 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.project.digimagz.Constant;
 import com.project.digimagz.R;
+import com.project.digimagz.api.InitRetrofit;
 import com.project.digimagz.model.NewsCoverStoryModel;
 import com.project.digimagz.model.NewsModel;
 import com.project.digimagz.view.activity.DetailNewsActivity;
@@ -31,8 +34,11 @@ public class RecyclerViewNewsCoverStoryAdapter extends RecyclerView.Adapter<Recy
     private SimpleDateFormat simpleDateFormat;
     private Date date;
     private String newsImage;
+    private FirebaseUser firebaseUser;
 
     public static final String INTENT_PARAM_KEY_NEWS_COVER_STORY_DATA = "INTENT_PARAM_KEY_NEWS_DATA";
+
+    private InitRetrofit initRetrofitLike;
 
     public RecyclerViewNewsCoverStoryAdapter(ArrayList<NewsCoverStoryModel> newsCoverStoryModelArrayList) {
         this.newsCoverStoryModelArrayList = newsCoverStoryModelArrayList;
@@ -46,16 +52,34 @@ public class RecyclerViewNewsCoverStoryAdapter extends RecyclerView.Adapter<Recy
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         final NewsCoverStoryModel newsCoverStoryModel = newsCoverStoryModelArrayList.get(position);
 
         newsImage = Constant.URL_IMAGE_NEWS + newsCoverStoryModel.getNewsImage();
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        initRetrofitLike = new InitRetrofit();
 
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             date = simpleDateFormat.parse(newsCoverStoryModel.getDateNews());
         } catch (ParseException e) {
             e.printStackTrace();
+        }
+
+        if (firebaseUser != null) {
+            initRetrofitLike.getLikeFromApi(newsCoverStoryModel.getIdNews(), firebaseUser.getEmail());
+            initRetrofitLike.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
+                @Override
+                public void onSuccessGetData(ArrayList arrayList) {
+                    if (arrayList.get(0).equals("Yes")) {
+                        holder.ivLiked.setVisibility(View.VISIBLE);
+                        holder.ivNotLike.setVisibility(View.GONE);
+                    }else if (arrayList.get(0).equals("No")){
+                        holder.ivLiked.setVisibility(View.GONE);
+                        holder.ivNotLike.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
         }
 
         holder.textViewTitle.setText(newsCoverStoryModel.getTitleNews());
@@ -66,6 +90,13 @@ public class RecyclerViewNewsCoverStoryAdapter extends RecyclerView.Adapter<Recy
                 .load(newsImage)
                 .into(holder.imageViewNews);
 
+        if (newsCoverStoryModel.getCheckLike() == 1){
+            holder.ivLiked.setVisibility(View.VISIBLE);
+            holder.ivNotLike.setVisibility(View.GONE);
+        }else{
+            holder.ivLiked.setVisibility(View.GONE);
+            holder.ivNotLike.setVisibility(View.VISIBLE);
+        }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -84,7 +115,7 @@ public class RecyclerViewNewsCoverStoryAdapter extends RecyclerView.Adapter<Recy
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView textViewTitle, textViewDate, textViewComment, textViewLike;
-        private ImageView imageViewNews;
+        private ImageView imageViewNews, ivNotLike, ivLiked;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -93,6 +124,8 @@ public class RecyclerViewNewsCoverStoryAdapter extends RecyclerView.Adapter<Recy
             textViewComment = itemView.findViewById(R.id.textViewComment);
             textViewLike = itemView.findViewById(R.id.textViewLike);
             imageViewNews = itemView.findViewById(R.id.imageViewNews);
+            ivNotLike = itemView.findViewById(R.id.ivNotLike);
+            ivLiked = itemView.findViewById(R.id.ivLiked);
         }
     }
 }
