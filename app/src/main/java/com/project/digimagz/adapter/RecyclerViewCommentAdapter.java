@@ -1,6 +1,8 @@
 package com.project.digimagz.adapter;
 
+import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.project.digimagz.R;
 import com.project.digimagz.model.CommentModel;
 import com.project.digimagz.model.NewsModel;
@@ -26,13 +29,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerViewCommentAdapter.ViewHolder> {
 
     private ArrayList<CommentModel> commentModelArrayList;
+    private Context context;
     SimpleDateFormat simpleDateFormat;
     Date date;
 
     public static final String INTENT_PARAM_KEY_NEWS_DATA = "INTENT_PARAM_KEY_NEWS_DATA";
 
-    public RecyclerViewCommentAdapter(ArrayList<CommentModel> commentModelArrayList) {
+    public RecyclerViewCommentAdapter(ArrayList<CommentModel> commentModelArrayList, Context context) {
         this.commentModelArrayList = commentModelArrayList;
+        this.context = context;
     }
 
     @NonNull
@@ -53,6 +58,20 @@ public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerVie
             e.printStackTrace();
         }
 
+        String format = null;
+        if (String.valueOf(commentModel.getProfilpicUrl()).equalsIgnoreCase("null")) {
+            if (String.valueOf(commentModel.getProfilpicUrl()).length() > 4) {
+                format = commentModel.getProfilpicUrl().substring(commentModel.getProfilpicUrl().length() - 4);
+            }
+        }
+
+        if (format != null) {
+            if (format.equalsIgnoreCase(".jpg") || format.equalsIgnoreCase(".png")) {
+                Glide.with(context)
+                        .load(commentModel.getProfilpicUrl())
+                        .into(holder.circleImageViewComment);
+            }
+        }
         holder.textViewCommentUser.setText(commentModel.getEmail());
         holder.textViewCommentContent.setText(commentModel.getCommentText());
         holder.textViewCommentDate.setText(DateFormat.getDateInstance(DateFormat.LONG, new Locale("in", "ID")).format(date));

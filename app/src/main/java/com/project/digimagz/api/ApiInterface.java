@@ -8,6 +8,7 @@ import com.project.digimagz.model.DefaultStructureNews;
 import com.project.digimagz.model.DefaultStructureNewsCoverStory;
 import com.project.digimagz.model.DefaultStructureStory;
 import com.project.digimagz.model.DefaultStructureUser;
+import com.project.digimagz.model.DefaultStructureVideo;
 import com.project.digimagz.model.LikeModel;
 import com.project.digimagz.model.UserModel;
 
@@ -51,6 +52,9 @@ public interface ApiInterface {
 
     @GET("likes/index_get")
     Call<DefaultStructureLike> getLikes(@Query("id_news") String idNews, @Query("email") String email);
+
+    @GET("video/index_get")
+    Call<DefaultStructureVideo> getVideo();
 
     @POST("comments/index_post")
     Call<CommentModel> postComment(@Body JsonObject jsonObject);

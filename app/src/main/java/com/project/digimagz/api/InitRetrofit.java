@@ -11,11 +11,13 @@ import com.project.digimagz.model.DefaultStructureNews;
 import com.project.digimagz.model.DefaultStructureNewsCoverStory;
 import com.project.digimagz.model.DefaultStructureStory;
 import com.project.digimagz.model.DefaultStructureUser;
+import com.project.digimagz.model.DefaultStructureVideo;
 import com.project.digimagz.model.LikeModel;
 import com.project.digimagz.model.NewsCoverStoryModel;
 import com.project.digimagz.model.NewsModel;
 import com.project.digimagz.model.StoryModel;
 import com.project.digimagz.model.UserModel;
+import com.project.digimagz.model.VideoModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -292,6 +294,24 @@ public class InitRetrofit {
                 list.add(0);
                 onRetrofitSuccess.onSuccessGetData(list);
                 Log.e("serverDigi", t.getMessage());
+            }
+        });
+    }
+
+    public void getVideoFromApi() {
+        apiInterface.getVideo().enqueue(new Callback<DefaultStructureVideo>() {
+            @Override
+            public void onResponse(Call<DefaultStructureVideo> call, Response<DefaultStructureVideo> response) {
+                ArrayList<VideoModel> list = new ArrayList<>();
+                if (response.code() == 200) {
+                    list.addAll(response.body().getData());
+                    onRetrofitSuccess.onSuccessGetData(list);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DefaultStructureVideo> call, Throwable t) {
+                Log.e("getVideoFromApi", t.getMessage());
             }
         });
     }

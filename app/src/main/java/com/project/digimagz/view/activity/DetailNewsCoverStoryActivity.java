@@ -190,8 +190,8 @@ public class DetailNewsCoverStoryActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     Toast.makeText(DetailNewsCoverStoryActivity.this, "Terima Kasih Atas Komentar Anda Dan Sedang Kami Moderasi", Toast.LENGTH_LONG).show();
-                    textInputEditTextComment.setText("");
                     initRetrofit.postCommentToApi(newsCoverStoryModel.getIdNews(), firebaseUser.getEmail(), textInputEditTextComment.getText().toString());
+                    textInputEditTextComment.setText("");
                 }
             });
 
@@ -239,7 +239,7 @@ public class DetailNewsCoverStoryActivity extends AppCompatActivity {
     private void showRecyclerListViewComment(ArrayList<CommentModel> commentModelArrayList) {
         recyclerViewComment.setHasFixedSize(true);
         recyclerViewComment.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerViewCommentAdapter recyclerViewCommentAdapter = new RecyclerViewCommentAdapter(commentModelArrayList);
+        RecyclerViewCommentAdapter recyclerViewCommentAdapter = new RecyclerViewCommentAdapter(commentModelArrayList, getApplicationContext());
         recyclerViewComment.setAdapter(recyclerViewCommentAdapter);
     }
 

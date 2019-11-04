@@ -80,9 +80,14 @@ public class SplashActivity extends Activity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (list.get(0) != 0) {
-                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                    finish();
+                if (!list.isEmpty()) {
+                    if (list.get(0) != 0) {
+                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        finish();
+                    } else {
+                        startActivity(new Intent(getApplicationContext(), ErrorActivity.class));
+                        finish();
+                    }
                 } else {
                     startActivity(new Intent(getApplicationContext(), ErrorActivity.class));
                     finish();

@@ -6,6 +6,8 @@ import java.io.Serializable;
 
 public class CommentModel implements Serializable {
 
+    @SerializedName("ID_COMMENT")
+    private String idNComment;
     @SerializedName("ID_NEWS")
     private String idNews;
     @SerializedName("EMAIL")
@@ -13,16 +15,31 @@ public class CommentModel implements Serializable {
     @SerializedName("COMMENT_TEXT")
     private String commentText;
     @SerializedName("IS_APPROVED")
-    private boolean isApproved;
+    private String isApproved;
     @SerializedName("DATE_COMMENT")
     private String dateComment;
+    @SerializedName("USER_NAME")
+    private String userName;
+    @SerializedName("PROFILEPIC_URL")
+    private String profilpicUrl;
 
-    public CommentModel(String idNews, String email, String commentText, boolean isApproved, String dateComment) {
+    public CommentModel(String idNComment, String idNews, String email, String commentText, String isApproved, String dateComment, String userName, String profilpicUrl) {
+        this.idNComment = idNComment;
         this.idNews = idNews;
         this.email = email;
         this.commentText = commentText;
         this.isApproved = isApproved;
         this.dateComment = dateComment;
+        this.userName = userName;
+        this.profilpicUrl = profilpicUrl;
+    }
+
+    public String getIdNComment() {
+        return idNComment;
+    }
+
+    public void setIdNComment(String idNComment) {
+        this.idNComment = idNComment;
     }
 
     public String getIdNews() {
@@ -49,12 +66,12 @@ public class CommentModel implements Serializable {
         this.commentText = commentText;
     }
 
-    public boolean isApproved() {
+    public String getIsApproved() {
         return isApproved;
     }
 
-    public void setApproved(boolean approved) {
-        isApproved = approved;
+    public void setIsApproved(String isApproved) {
+        this.isApproved = isApproved;
     }
 
     public String getDateComment() {
@@ -63,5 +80,21 @@ public class CommentModel implements Serializable {
 
     public void setDateComment(String dateComment) {
         this.dateComment = dateComment;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getProfilpicUrl() {
+        return profilpicUrl;
+    }
+
+    public void setProfilpicUrl(String profilpicUrl) {
+        this.profilpicUrl = profilpicUrl;
     }
 }

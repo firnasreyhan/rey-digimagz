@@ -69,6 +69,10 @@ public class DetailStoryActivity extends AppCompatActivity {
                 .load(newsImage)
                 .into(imageViewCover);
 
+        setRecyclerView();
+    }
+
+    public void setRecyclerView() {
         initRetrofit.getNewsCoverStoryFromApi(storyModel.getIdCoverStory());
         initRetrofit.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
             @Override
@@ -94,5 +98,11 @@ public class DetailStoryActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setRecyclerView();
     }
 }
