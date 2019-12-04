@@ -6,7 +6,9 @@ import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,6 +43,7 @@ public class VideoFragment extends Fragment {
     private ArrayList<YoutubeDataModel> mListData = new ArrayList<>();
     private RecyclerView recyclerViewVideo;
     private RecyclerViewVideoAdapter recyclerViewVideoAdapter;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private ShimmerFrameLayout mShimmerViewContainer;
     private NestedScrollView nestedScrollViewVideo;
 
@@ -55,10 +58,32 @@ public class VideoFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_video, container, false);
         initRetrofit = new InitRetrofit();
+
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         recyclerViewVideo = view.findViewById(R.id.recyclerViewVideo);
         mShimmerViewContainer = view.findViewById(R.id.shimmer_view_container);
         nestedScrollViewVideo = view.findViewById(R.id.nestedScrollViewVideo);
 
+//        displayVideo();
+        setRecyclerView();
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        setRecyclerView();
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 2500);
+            }
+        });
+        return view;
+    }
+
+    private void setRecyclerView() {
         initRetrofit.getVideoFromApi();
         initRetrofit.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
             @Override
@@ -72,8 +97,6 @@ public class VideoFragment extends Fragment {
             }
         });
 
-//        displayVideo();
-        return view;
     }
 
     private void showRecyclerListViewVideo(ArrayList<VideoModel> arrayList) {

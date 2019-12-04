@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
-    android:id="@+id/nestedScrollViewVideo"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    android:id="@+id/swipeRefreshLayout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,55 +9,62 @@
     android:background="@color/colorBackground"
     tools:context=".view.fragment.VideoFragment">
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollViewVideo"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="match_parent">
 
-        <com.facebook.shimmer.ShimmerFrameLayout
-            android:id="@+id/shimmer_view_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical"
-            app:shimmer_duration="800">
-
-            <!-- Adding 10 rows of placeholders -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <include layout="@layout/list_placeholder_video" />
-
-                <include layout="@layout/list_placeholder_video" />
-
-                <include layout="@layout/list_placeholder_video" />
-
-                <include layout="@layout/list_placeholder_video" />
-
-                <include layout="@layout/list_placeholder_video" />
-
-                <include layout="@layout/list_placeholder_video" />
-
-                <include layout="@layout/list_placeholder_video" />
-
-                <include layout="@layout/list_placeholder_video" />
-
-                <include layout="@layout/list_placeholder_video" />
-
-                <include layout="@layout/list_placeholder_video" />
-
-            </LinearLayout>
-
-        </com.facebook.shimmer.ShimmerFrameLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewVideo"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-    </LinearLayout>
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmer_view_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                app:shimmer_duration="800">
 
-</androidx.core.widget.NestedScrollView>
+                <!-- Adding 10 rows of placeholders -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <include layout="@layout/list_placeholder_video" />
+
+                    <include layout="@layout/list_placeholder_video" />
+
+                    <include layout="@layout/list_placeholder_video" />
+
+                    <include layout="@layout/list_placeholder_video" />
+
+                    <include layout="@layout/list_placeholder_video" />
+
+                    <include layout="@layout/list_placeholder_video" />
+
+                    <include layout="@layout/list_placeholder_video" />
+
+                    <include layout="@layout/list_placeholder_video" />
+
+                    <include layout="@layout/list_placeholder_video" />
+
+                    <include layout="@layout/list_placeholder_video" />
+
+                </LinearLayout>
+
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewVideo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

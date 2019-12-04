@@ -51,7 +51,7 @@
                     android:layout_gravity="bottom|right"
                     android:background="@drawable/roundcorner"
                     android:src="@drawable/ic_camera"
-                    android:visibility="visible" />
+                    android:visibility="gone" />
             </FrameLayout>
 
 
@@ -144,9 +144,11 @@
                     android:layout_gravity="center_vertical"/>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
+                    android:layout_weight="1"
+                    android:layout_marginRight="20dp"
                     android:gravity="center">
 
                     <TextView
@@ -171,10 +173,6 @@
                         android:singleLine="true"/>
                 </LinearLayout>
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
                 <ProgressBar
                     android:id="@+id/progressBarEdit"
                     android:layout_width="30dp"

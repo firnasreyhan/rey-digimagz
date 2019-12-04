@@ -210,7 +210,7 @@ public class ProfileFragment extends Fragment {
                 etEditName.clearFocus();
                 alert.cancel();
                 imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-                apiInterface.putUserName(tvEmail.getText().toString().substring(0, ind), etEditName.getText().toString()).enqueue(new Callback<DefaultStructureUser>() {
+                apiInterface.putUserName(tvEmail.getText().toString(), etEditName.getText().toString()).enqueue(new Callback<DefaultStructureUser>() {
                     @Override
                     public void onResponse(Call<DefaultStructureUser> call, Response<DefaultStructureUser> response) {
                         progressBarEdit.setVisibility(View.GONE);
@@ -221,7 +221,7 @@ public class ProfileFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<DefaultStructureUser> call, Throwable t) {
-
+                        Log.e("PUT", t.getMessage());
                     }
                 });
             }

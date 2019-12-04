@@ -7,6 +7,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Handler;
@@ -25,7 +26,9 @@ import com.project.digimagz.adapter.RecyclerViewStoryAdapter;
 import com.project.digimagz.api.InitRetrofit;
 import com.project.digimagz.model.NewsModel;
 import com.project.digimagz.model.StoryModel;
+import com.project.digimagz.view.activity.ErrorActivity;
 import com.project.digimagz.view.activity.ListNewsActivity;
+import com.project.digimagz.view.activity.MainActivity;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.util.ArrayList;
@@ -40,6 +43,7 @@ public class HomeFragment extends Fragment {
     private ShimmerFrameLayout shimmerFrameLayoutTranding, shimmerFrameLayoutCoverStory, shimmerFrameLayoutNews, shimmerFrameLayoutSlider;
     private MaterialButton materialButtonMoreTrending;
     private NestedScrollView nestedScrollViewHome;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private RelativeLayout relativeLayoutSlider;
     private ViewPager mPager;
@@ -68,6 +72,8 @@ public class HomeFragment extends Fragment {
         initRetrofitStory = new InitRetrofit();
         initRetrofitNews = new InitRetrofit();
 
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+
         recyclerViewTranding = view.findViewById(R.id.recylerViewTranding);
         recylcerViewCoverStory = view.findViewById(R.id.recylcerViewCoverStory);
         recylcerViewNews = view.findViewById(R.id.recylcerViewNews);
@@ -84,6 +90,35 @@ public class HomeFragment extends Fragment {
         mPager = view.findViewById(R.id.pagerSlider);
         indicator = view.findViewById(R.id.indicatorSlider);
 
+        materialButtonMoreTrending.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), ListNewsActivity.class);
+                intent.putExtra("params", "trending");
+                startActivity(intent);
+            }
+        });
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        setRecyclerView();
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 2500);
+            }
+        });
+
+        setRecyclerView();
+
+        return view;
+    }
+
+    private void setRecyclerView() {
         initRetrofitSlider.getSliderFromApi();
         initRetrofitSlider.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
             @Override
@@ -97,21 +132,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        setRecyclerView();
-
-        materialButtonMoreTrending.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getContext(), ListNewsActivity.class);
-                intent.putExtra("params", "trending");
-                startActivity(intent);
-            }
-        });
-
-        return view;
-    }
-
-    private void setRecyclerView() {
         initRetrofitTrending.getNewsTrendingFromApi();
         initRetrofitTrending.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
             @Override

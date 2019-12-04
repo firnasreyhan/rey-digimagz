@@ -30,6 +30,7 @@ public class ApiClient {
             retrofit = new Retrofit.Builder()
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(okHttpClient)
+                    //.baseUrl("http://pn10mobprd.ptpn10.co.id:8080/digimagz/api/")
                     .baseUrl("http://digimon.kristomoyo.com/api/")
                     .build();
 
