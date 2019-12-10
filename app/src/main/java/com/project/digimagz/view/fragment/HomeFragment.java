@@ -52,6 +52,18 @@ public class HomeFragment extends Fragment {
 
     private CirclePageIndicator indicator;
 
+    private Handler swiper = new Handler();
+    private Runnable swiperRunnable = new Runnable() {
+        public void run() {
+            if (currentPage == NUM_PAGES) {
+                currentPage = 0;
+            }
+            mPager.setCurrentItem(currentPage++, true);
+
+            swiper.postDelayed(this, 3000);
+        }
+    };
+
    // private String[] urls = new String[] {"https://upload.wikimedia.org/wikipedia/commons/3/32/Jesus_und_Ehebrecherin.jpg", "https://upload.wikimedia.org/wikipedia/commons/3/32/Jesus_und_Ehebrecherin.jpg", "https://upload.wikimedia.org/wikipedia/commons/3/32/Jesus_und_Ehebrecherin.jpg"};
 
 
@@ -119,6 +131,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void setRecyclerView() {
+        swiper.removeCallbacks(swiperRunnable);
+
         initRetrofitSlider.getSliderFromApi();
         initRetrofitSlider.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
             @Override
@@ -186,23 +200,15 @@ public class HomeFragment extends Fragment {
             NUM_PAGES = newsModelArrayList.size();
 
             // Auto start of viewpager
-            final Handler handler = new Handler();
-            final Runnable Update = new Runnable() {
-                public void run() {
-                    if (currentPage == NUM_PAGES) {
-                        currentPage = 0;
-                    }
-                    mPager.setCurrentItem(currentPage++, true);
-                }
-            };
+            swiper.postDelayed(swiperRunnable, 3000);
 
-            Timer swipeTimer = new Timer();
+            /**Timer swipeTimer = new Timer();
             swipeTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     handler.post(Update);
                 }
-            }, 3000, 3000);
+            }, 3000, 3000);*/
 
             indicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 @Override
