@@ -131,7 +131,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void setRecyclerView() {
-        if(!isAdded()) return;
+        if(getActivity() == null && !isAdded()) return;
 
         swiper.removeCallbacks(swiperRunnable);
 
