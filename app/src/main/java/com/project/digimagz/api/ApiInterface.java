@@ -75,6 +75,10 @@ public interface ApiInterface {
 
     @FormUrlEncoded
     @HTTP(method = "PUT", path = "user/index_put", hasBody = true)
+    Call<DefaultStructureUser> putUser(@Field("email") String email, @Field("name") String name, @Field("pic_url") String pic_url, @Field("date_birth") String date_birth, @Field("gender") String gender);
+
+    @FormUrlEncoded
+    @HTTP(method = "PUT", path = "user/index_put", hasBody = true)
     Call<DefaultStructureUser> putUserPhoto(@Field("email") String email, @Field("pic_url") String pic_url);
 
 }

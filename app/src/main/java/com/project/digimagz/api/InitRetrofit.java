@@ -260,6 +260,20 @@ public class InitRetrofit {
         });
     }
 
+    public void putUserToApi(String email, String name, String urlPic, String dateBirth, String gender) {
+
+        apiInterface.putUser(email, name, urlPic, dateBirth, gender).enqueue(new Callback<DefaultStructureUser>() {
+            @Override
+            public void onResponse(Call<DefaultStructureUser> call, Response<DefaultStructureUser> response) {
+                Log.e("putUserToApi", "Success");
+            }
+
+            @Override
+            public void onFailure(Call<DefaultStructureUser> call, Throwable t) {
+                Log.e("putUserToApi", t.getMessage());
+            }
+        });
+    }
 
     public void getLikeFromApi(String idNews, String email) {
         apiInterface.getLikes(idNews, email).enqueue(new Callback<DefaultStructureLike>() {

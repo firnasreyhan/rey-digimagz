@@ -40,38 +40,49 @@
 
         <LinearLayout
             android:layout_width="300dp"
-            android:layout_height="225dp"
+            android:layout_height="275dp"
+            android:gravity="center"
             android:orientation="vertical"
-            android:padding="25dp"
-            android:gravity="center">
+            android:padding="25dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:text="Please sign in."/>
+                android:text="Please sign in."
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/materialButtonEmail"
+                style="@style/Widget.MaterialComponents.Button.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:backgroundTint="@android:color/darker_gray"
+                android:text="Sign in with Email"
+                android:textAllCaps="false"
+                app:icon="@drawable/ic_email" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/materialButtonGoogle"
+                style="@style/Widget.MaterialComponents.Button.Icon"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/Widget.MaterialComponents.Button.Icon"
-                android:backgroundTint="@color/buttonGoogle"
-                android:textAllCaps="false"
-                app:icon="@drawable/ic_google"
                 android:layout_marginBottom="5dp"
-                android:text="Sign in with Google"/>
+                android:backgroundTint="@color/buttonGoogle"
+                android:text="Sign in with Google"
+                android:textAllCaps="false"
+                app:icon="@drawable/ic_google" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/materialButtonFacebook"
+                style="@style/Widget.MaterialComponents.Button.Icon"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/Widget.MaterialComponents.Button.Icon"
                 android:backgroundTint="@color/buttonFacebook"
+                android:text="Sign in with Facebook"
                 android:textAllCaps="false"
-                app:icon="@drawable/ic_facebook"
-                android:text="Sign in with Facebook"/>
+                app:icon="@drawable/ic_facebook" />
 
         </LinearLayout>
 

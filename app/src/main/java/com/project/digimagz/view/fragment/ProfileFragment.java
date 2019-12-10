@@ -17,35 +17,30 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.data.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.project.digimagz.Constant;
@@ -54,19 +49,20 @@ import com.project.digimagz.api.ApiClient;
 import com.project.digimagz.api.ApiInterface;
 import com.project.digimagz.api.InitRetrofit;
 import com.project.digimagz.model.DefaultStructureUser;
-import com.project.digimagz.model.LikeModel;
-import com.project.digimagz.model.NewsModel;
 import com.project.digimagz.model.UserModel;
-import com.project.digimagz.view.activity.ErrorActivity;
 import com.project.digimagz.view.activity.MainActivity;
+import com.project.digimagz.view.activity.UpdateProfileActivity;
 import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import id.zelory.compressor.Compressor;
@@ -80,10 +76,10 @@ import static android.app.Activity.RESULT_OK;
 public class ProfileFragment extends Fragment {
 
     private MaterialButton materialButtonSignOut;
-    private TextView tvName, tvEmail, tvPhone;
+    private TextView tvName, tvEmail, tvPhone, tvAge, tvGender, tvStatus;
     private CircleImageView imgProfile;
     private LinearLayout phoneLayout;
-    private ImageButton btnCamera, btnEdit;
+    private ImageButton btnCamera, btnEditName, btnEditGender, btnEditAge;
     private ProgressBar progressBar, progressBarEdit;
     private InitRetrofit initRetrofitUser;
     String email;
@@ -109,12 +105,17 @@ public class ProfileFragment extends Fragment {
         tvName = view.findViewById(R.id.tvNameProfile);
         tvEmail = view.findViewById(R.id.tvEmailProfile);
         tvPhone = view.findViewById(R.id.tvPhoneProfile);
+        tvAge = view.findViewById(R.id.tvAge);
+        tvGender = view.findViewById(R.id.tvGender);
+        tvStatus = view.findViewById(R.id.tvStatus);
         imgProfile = view.findViewById(R.id.imgProfile);
         phoneLayout = view.findViewById(R.id.phoneLayout);
         btnCamera = view.findViewById(R.id.btnCamera);
-        btnEdit = view.findViewById(R.id.btnEdit);
+        btnEditName = view.findViewById(R.id.btnEditNama);
+        btnEditGender = view.findViewById(R.id.btnEditJenisKelamin);
+        btnEditAge = view.findViewById(R.id.btnEditUsia);
         progressBar = view.findViewById(R.id.progressBar);
-        progressBarEdit = view.findViewById(R.id.progressBarEdit);
+        progressBarEdit = view.findViewById(R.id.progressBarEditNama);
 
         initRetrofitUser = new InitRetrofit();
         retrofit = ApiClient.getRetrofit();
@@ -128,13 +129,34 @@ public class ProfileFragment extends Fragment {
                 @Override
                 public void run() {
                     int subindex = firebaseUser.getEmail().indexOf("@");
-                    apiInterface.getUser(firebaseUser.getEmail().substring(0, subindex)).enqueue(new Callback<DefaultStructureUser>() {
+                    //apiInterface.getUser(firebaseUser.getEmail().substring(0, subindex)).enqueue(new Callback<DefaultStructureUser>() {
+                    apiInterface.getUser(firebaseUser.getEmail()).enqueue(new Callback<DefaultStructureUser>() {
                         @Override
                         public void onResponse(Call<DefaultStructureUser> call, Response<DefaultStructureUser> response) {
                             Log.d("getUser", String.valueOf(response.body().getData().size()));
                             ArrayList<UserModel> userModel = response.body().getData();
                             tvName.setText(userModel.get(0).getUserName());
+                            if (userModel.get(0).getGender() != null && userModel.get(0).getDateBirth() != null) {
+                                if (userModel.get(0).getGender().equalsIgnoreCase("L")) {
+                                    tvGender.setText("Laki-laki");
+                                } else if (userModel.get(0).getGender().equalsIgnoreCase("P")) {
+                                    tvGender.setText("Perempuan");
+                                }
+                                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", new Locale("in", "ID"));
+                                try {
+                                    Date date = format.parse(userModel.get(0).getDateBirth());
+                                    SimpleDateFormat dateFormatterText = new SimpleDateFormat("dd MMMM yyyy", new Locale("in", "ID"));
+                                    tvAge.setText(dateFormatterText.format(date.getTime()));
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                Intent intent = new Intent(getContext(), UpdateProfileActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                            }
                             tvEmail.setText(userModel.get(0).getEmail());
+                            tvStatus.setText(userModel.get(0).getUserType());
                             Glide.with(getActivity())
                                     .load(userModel.get(0).getUrlPic())
                                     .placeholder(R.color.chef)
@@ -164,13 +186,27 @@ public class ProfileFragment extends Fragment {
         });
 
 
-        btnEdit.setOnClickListener(new View.OnClickListener() {
+        btnEditName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 showDialogEditName();
-                 }
+            }
         });
+
+        btnEditGender.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialogEditGender();
+            }
+        });
+
+        btnEditAge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialogEditAge();
+            }
+        });
+
         materialButtonSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -187,7 +223,7 @@ public class ProfileFragment extends Fragment {
         Button btnEditName, btnCancel;
         final AlertDialog alert = new AlertDialog.Builder(getContext()).create();
         LayoutInflater inflater = getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.alert_edit, null);
+        final View dialogView = inflater.inflate(R.layout.alert_edit_name, null);
         alert.setView(dialogView);
         alert.setTitle("Edit Nama Profil");
 
@@ -231,6 +267,149 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 etEditName.clearFocus();
+                alert.cancel();
+                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+            }
+        });
+
+    }
+
+    private void showDialogEditGender() {
+        final RadioGroup radioGroup;
+        final TextView textViewGender;
+        final Button btnEditGender, btnCancel;
+        final AlertDialog alert = new AlertDialog.Builder(getContext()).create();
+        LayoutInflater inflater = getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.alert_edit_gender, null);
+        alert.setView(dialogView);
+        alert.setTitle("Edit Jenis Kelamin Profil");
+
+        radioGroup = dialogView.findViewById(R.id.radioGroup);
+        btnEditGender = dialogView.findViewById(R.id.btnEditGender);
+        textViewGender = dialogView.findViewById(R.id.tvGender);
+        btnCancel = dialogView.findViewById(R.id.btnCancel);
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radioButtonMan) {
+                    textViewGender.setText("Laki-laki");
+                } else if (checkedId == R.id.radioButtonWoman) {
+                    textViewGender.setText("Perempuan");
+                }
+            }
+        });
+
+        if (tvGender.getText().toString().equalsIgnoreCase("Laki-laki")) {
+            RadioButton radioButton = dialogView.findViewById(R.id.radioButtonMan);
+            radioButton.setChecked(true);
+        }
+
+        if (tvGender.getText().toString().equalsIgnoreCase("Perempuan")) {
+            RadioButton radioButton = dialogView.findViewById(R.id.radioButtonWoman);
+            radioButton.setChecked(true);
+        }
+
+//        etEditName.setText(tvName.getText().toString());
+//        etEditName.setSelection(tvName.getText().length());
+
+        final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        alert.show();
+
+        btnEditGender.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tvGender.setText(textViewGender.getText());
+                alert.dismiss();
+//                progressBarEdit.setVisibility(View.VISIBLE);
+//                int ind = tvEmail.getText().toString().indexOf("@");
+//                etEditName.clearFocus();
+//                alert.cancel();
+//                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+//                apiInterface.putUserName(tvEmail.getText().toString(), etEditName.getText().toString()).enqueue(new Callback<DefaultStructureUser>() {
+//                    @Override
+//                    public void onResponse(Call<DefaultStructureUser> call, Response<DefaultStructureUser> response) {
+//                        progressBarEdit.setVisibility(View.GONE);
+////                        UserModel userModel = response.body().getData();
+//                        ArrayList<UserModel> userModels = response.body().getData();
+//                        tvName.setText(userModels.get(0).getUserName());
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<DefaultStructureUser> call, Throwable t) {
+//                        Log.e("PUT", t.getMessage());
+//                    }
+//                });
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alert.cancel();
+                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+            }
+        });
+
+    }
+
+    private void showDialogEditAge() {
+        final EditText etEditAge;
+        Button btnEditAge, btnCancel;
+        final AlertDialog alert = new AlertDialog.Builder(getContext()).create();
+        LayoutInflater inflater = getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.alert_edit_age, null);
+        alert.setView(dialogView);
+        alert.setTitle("Edit Nama Profil");
+
+        etEditAge = dialogView.findViewById(R.id.etEditAge);
+        btnEditAge = dialogView.findViewById(R.id.btnEditAge);
+        btnCancel = dialogView.findViewById(R.id.btnCancel);
+
+        if (!tvAge.getText().toString().equalsIgnoreCase("-")) {
+            etEditAge.setText(tvAge.getText().toString());
+            etEditAge.setSelection(tvAge.getText().length());
+        } else {
+            etEditAge.setText("0");
+            etEditAge.setSelection(tvAge.getText().length());
+        }
+
+        final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        alert.show();
+
+        btnEditAge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tvAge.setText(etEditAge.getText());
+                alert.dismiss();
+//                progressBarEdit.setVisibility(View.VISIBLE);
+//                int ind = tvEmail.getText().toString().indexOf("@");
+//                etEditName.clearFocus();
+//                alert.cancel();
+//                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+//                apiInterface.putUserName(tvEmail.getText().toString(), etEditName.getText().toString()).enqueue(new Callback<DefaultStructureUser>() {
+//                    @Override
+//                    public void onResponse(Call<DefaultStructureUser> call, Response<DefaultStructureUser> response) {
+//                        progressBarEdit.setVisibility(View.GONE);
+////                        UserModel userModel = response.body().getData();
+//                        ArrayList<UserModel> userModels = response.body().getData();
+//                        tvName.setText(userModels.get(0).getUserName());
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<DefaultStructureUser> call, Throwable t) {
+//                        Log.e("PUT", t.getMessage());
+//                    }
+//                });
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                etEditAge.clearFocus();
                 alert.cancel();
                 imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
             }
@@ -449,5 +628,6 @@ public class ProfileFragment extends Fragment {
         Intent intent = new Intent(getContext(), MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+//        getActivity().finish();
     }
 }

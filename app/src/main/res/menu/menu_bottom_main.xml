@@ -17,6 +17,11 @@
         android:icon="@drawable/selector_search_menu"/>
 
     <item
+        android:id="@+id/emagz_menu"
+        android:title="Emagz"
+        android:icon="@drawable/selector_emagz_menu"/>
+
+    <item
         android:id="@+id/login_profile_menu"
         android:title="Login"
         android:icon="@drawable/selector_login_profile_menu"/>

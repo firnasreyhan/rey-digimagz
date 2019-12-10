@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.project.digimagz.R;
 import com.project.digimagz.api.InitRetrofit;
+import com.project.digimagz.view.fragment.EmagzFragment;
 import com.project.digimagz.view.fragment.ProfileFragment;
 import com.project.digimagz.view.fragment.SearchFragment;
 import com.project.digimagz.view.fragment.HomeFragment;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private MenuItem menuItem;
 
     private boolean doubleBackToExit, checkFragment;
-    private Fragment fragmentActive, fragmentHome, fragmentVideo, fragmentSearch, fragmentProfile;
+    private Fragment fragmentActive, fragmentHome, fragmentVideo, fragmentSearch, fragmentEmagz, fragmentProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentHome = new HomeFragment();
         fragmentVideo = new VideoFragment();
         fragmentSearch = new SearchFragment();
+        fragmentEmagz = new EmagzFragment();
         fragmentProfile = new ProfileFragment();
         fragmentActive = fragmentHome;
 
@@ -75,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
                 .Builder(R.layout.activity_login)
                 .setGoogleButtonId(R.id.materialButtonGoogle)
                 .setFacebookButtonId(R.id.materialButtonFacebook)
+                .setEmailButtonId(R.id.materialButtonEmail)
                 .build();
 
         doubleBackToExit = true;
@@ -91,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         fragmentManager.beginTransaction().add(R.id.frameLayoutForFragment, fragmentProfile, "Profile").hide(fragmentProfile).commit();
+        fragmentManager.beginTransaction().add(R.id.frameLayoutForFragment, fragmentEmagz, "Emagz").hide(fragmentEmagz).commit();
         fragmentManager.beginTransaction().add(R.id.frameLayoutForFragment, fragmentSearch, "Search").hide(fragmentSearch).commit();
         fragmentManager.beginTransaction().add(R.id.frameLayoutForFragment, fragmentVideo, "Video").hide(fragmentVideo).commit();
         fragmentManager.beginTransaction().add(R.id.frameLayoutForFragment, fragmentHome, "Home").commit();
@@ -100,7 +104,8 @@ public class MainActivity extends AppCompatActivity {
     public void setIdpConfigList() {
         idpConfigList = Arrays.asList(
                 new AuthUI.IdpConfig.FacebookBuilder().build(),
-                new AuthUI.IdpConfig.GoogleBuilder().build()
+                new AuthUI.IdpConfig.GoogleBuilder().build(),
+                new AuthUI.IdpConfig.EmailBuilder().build()
         );
     }
 
@@ -150,7 +155,16 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.explore_menu:
                     //((VideoFragment) fragmentVideo).pauseVideo();
                     fragmentManager.beginTransaction().hide(fragmentActive).show(fragmentSearch).commit();
+                    if (fragmentActive == fragmentSearch) {
+                        ((SearchFragment) fragmentSearch).scrollUp();
+                    }
                     fragmentActive = fragmentSearch;
+                    doubleBackToExit = false;
+                    return true;
+                case R.id.emagz_menu:
+                    //((VideoFragment) fragmentVideo).pauseVideo();
+                    fragmentManager.beginTransaction().hide(fragmentActive).show(fragmentEmagz).commit();
+                    fragmentActive = fragmentEmagz;
                     doubleBackToExit = false;
                     return true;
                 case R.id.login_profile_menu:

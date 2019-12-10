@@ -3,10 +3,13 @@ package com.project.digimagz.view.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +36,8 @@ public class SearchFragment extends Fragment {
 
     private RecyclerView recyclerViewNews;
     private ShimmerFrameLayout shimmerFrameLayoutNews;
+    private NestedScrollView nestedScrollViewSearch;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,6 +57,8 @@ public class SearchFragment extends Fragment {
 
         recyclerViewNews = view.findViewById(R.id.recyclerViewNews);
         shimmerFrameLayoutNews = view.findViewById(R.id.shimmerFrameLayoutNews);
+        nestedScrollViewSearch = view.findViewById(R.id.nestedScrollViewSearch);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
 
         setRecyclerView();
 
@@ -61,6 +68,20 @@ public class SearchFragment extends Fragment {
                 Intent intent = new Intent(getContext(), ListNewsActivity.class);
                 intent.putExtra("params", textInputEditTextSearch.getText().toString());
                 startActivity(intent);
+            }
+        });
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        setRecyclerView();
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 2500);
             }
         });
 
@@ -91,6 +112,10 @@ public class SearchFragment extends Fragment {
         recyclerViewNewsAdapter.notifyDataSetChanged();
         shimmerFrameLayoutNews.stopShimmer();
         shimmerFrameLayoutNews.setVisibility(View.GONE);
+    }
+
+    public void scrollUp(){
+        nestedScrollViewSearch.smoothScrollTo(0,0);
     }
 
     @Override

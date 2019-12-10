@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,6 +49,8 @@ public class RecyclerViewStoryAdapter extends RecyclerView.Adapter<RecyclerViewS
                 .load(newsImage)
                 .into(holder.imageViewStory);
 
+        holder.textViewTitle.setText(storyModel.getTitleCoverStory());
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,10 +69,12 @@ public class RecyclerViewStoryAdapter extends RecyclerView.Adapter<RecyclerViewS
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView imageViewStory;
+        private TextView textViewTitle;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageViewStory = itemView.findViewById(R.id.imageViewStory);
+            textViewTitle = itemView.findViewById(R.id.textViewTitle);
         }
     }
 }

@@ -171,59 +171,61 @@ public class HomeFragment extends Fragment {
                 }
             }
         });
-
     }
 
     private void showSlider(ArrayList<NewsModel> newsModelArrayList) {
-        mPager.setAdapter(new ImageSliderAdapater(getContext(), newsModelArrayList));
-        indicator.setViewPager(mPager);
+        if (newsModelArrayList.size() > 0) {
+            mPager.setAdapter(new ImageSliderAdapater(this.getContext(), newsModelArrayList));
+            indicator.setViewPager(mPager);
 
-        final float density = getResources().getDisplayMetrics().density;
+            final float density = getResources().getDisplayMetrics().density;
 
-        //Set circle indicator radius
-        indicator.setRadius(5 * density);
+            //Set circle indicator radius
+            indicator.setRadius(5 * density);
 
-        NUM_PAGES = newsModelArrayList.size();
+            NUM_PAGES = newsModelArrayList.size();
 
-        // Auto start of viewpager
-        final Handler handler = new Handler();
-        final Runnable Update = new Runnable() {
-            public void run() {
-                if (currentPage == NUM_PAGES) {
-                    currentPage = 0;
+            // Auto start of viewpager
+            final Handler handler = new Handler();
+            final Runnable Update = new Runnable() {
+                public void run() {
+                    if (currentPage == NUM_PAGES) {
+                        currentPage = 0;
+                    }
+                    mPager.setCurrentItem(currentPage++, true);
                 }
-                mPager.setCurrentItem(currentPage++, true);
-            }
-        };
+            };
 
-        Timer swipeTimer = new Timer();
-        swipeTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(Update);
-            }
-        }, 3000, 3000);
+            Timer swipeTimer = new Timer();
+            swipeTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    handler.post(Update);
+                }
+            }, 3000, 3000);
 
-        indicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                currentPage = position;
-            }
+            indicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                    currentPage = position;
+                    Log.e("pos", String.valueOf(currentPage));
+                }
 
-            @Override
-            public void onPageSelected(int position) {
+                @Override
+                public void onPageSelected(int position) {
 
-            }
+                }
 
-            @Override
-            public void onPageScrollStateChanged(int state) {
+                @Override
+                public void onPageScrollStateChanged(int state) {
 
-            }
-        });
+                }
+            });
 
-        relativeLayoutSlider.setVisibility(View.VISIBLE);
-        shimmerFrameLayoutSlider.stopShimmer();
-        shimmerFrameLayoutSlider.setVisibility(View.GONE);
+            relativeLayoutSlider.setVisibility(View.VISIBLE);
+            shimmerFrameLayoutSlider.stopShimmer();
+            shimmerFrameLayoutSlider.setVisibility(View.GONE);
+        }
     }
 
     private void showRecyclerListViewTrending(ArrayList<NewsModel> newsModelArrayList) {
