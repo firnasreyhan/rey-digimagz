@@ -189,7 +189,7 @@ public class HomeFragment extends Fragment {
 
     private void showSlider(ArrayList<NewsModel> newsModelArrayList) {
         if (newsModelArrayList.size() > 0) {
-            mPager.setAdapter(new ImageSliderAdapater(this.getContext(), newsModelArrayList));
+            mPager.setAdapter(new ImageSliderAdapater(newsModelArrayList));
             indicator.setViewPager(mPager);
 
             final float density = getResources().getDisplayMetrics().density;

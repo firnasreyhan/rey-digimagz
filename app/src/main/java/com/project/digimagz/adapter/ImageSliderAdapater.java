@@ -30,16 +30,12 @@ public class ImageSliderAdapater extends PagerAdapter {
     public static final String INTENT_PARAM_KEY_NEWS_DATA = "INTENT_PARAM_KEY_NEWS_DATA";
 
     private ArrayList<NewsModel> newsModelArrayList;
-    private LayoutInflater inflater;
-    private Context context;
 
     private SimpleDateFormat simpleDateFormat;
     private Date date;
 
-    public ImageSliderAdapater(Context context, ArrayList<NewsModel> newsModelArrayList){
-        this.context = context;
+    public ImageSliderAdapater(ArrayList<NewsModel> newsModelArrayList){
         this.newsModelArrayList = newsModelArrayList;
-        inflater = LayoutInflater.from(context);
     }
 
     @Override
@@ -55,7 +51,7 @@ public class ImageSliderAdapater extends PagerAdapter {
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup view, final int position) {
-        View imageLayout = inflater.inflate(R.layout.list_image_slider, view, false);
+        View imageLayout = LayoutInflater.from(view.getContext()).inflate(R.layout.list_image_slider, view, false);
         final NewsModel newsModel = newsModelArrayList.get(position);
 
         assert imageLayout != null;
@@ -70,7 +66,7 @@ public class ImageSliderAdapater extends PagerAdapter {
             e.printStackTrace();
         }
 
-        Glide.with(context)
+        Glide.with(view.getContext())
                 .load("http://digimon.kristomoyo.com/images/news/" + newsModel.getNewsImage())
                 .into(imageView);
 
