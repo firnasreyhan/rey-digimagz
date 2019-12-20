@@ -178,38 +178,7 @@ public class DetailNewsCoverStoryActivity extends AppCompatActivity {
             textViewVerificator.setText(newsCoverStoryModel.getVerificator());
         }
 
-        initRetrofitComment.getCommentFromApi(newsCoverStoryModel.getIdNews());
-        initRetrofitComment.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
-            @Override
-            public void onSuccessGetData(ArrayList arrayList) {
-                if (!arrayList.isEmpty()) {
-                    Log.i("Size", String.valueOf(arrayList.size()));
-                    textViewCountComment.setText(String.valueOf(arrayList.size()));
-
-                    ArrayList commentModels = new ArrayList<CommentModel>();
-                    for (int i = arrayList.size()-1; i >= 0; i--) {
-                        commentModels.add(arrayList.get(i));
-                    }
-
-                    showRecyclerListViewComment(arrayList);
-                } else {
-                    Log.i("Size", String.valueOf(arrayList.size()));
-                }
-            }
-        });
-
-        initRetrofitNews.getNewsRelatedFromApi(newsCoverStoryModel.getIdNews());
-        initRetrofitNews.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
-            @Override
-            public void onSuccessGetData(ArrayList arrayList) {
-                if (!arrayList.isEmpty()) {
-                    Log.i("Size", String.valueOf(arrayList.size()));
-                    showRecyclerListViewNews(arrayList);
-                } else {
-                    Log.i("Size", String.valueOf(arrayList.size()));
-                }
-            }
-        });
+        setRecyclerView();
 
         if (firebaseUser != null) {
             imageButtonLike.setEnabled(true);
@@ -302,6 +271,37 @@ public class DetailNewsCoverStoryActivity extends AppCompatActivity {
         });
     }
 
+    private void setRecyclerView() {
+        initRetrofitComment.getCommentFromApi(newsCoverStoryModel.getIdNews());
+        initRetrofitComment.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
+            @Override
+            public void onSuccessGetData(ArrayList arrayList) {
+                Log.i("Size", String.valueOf(arrayList.size()));
+                textViewCountComment.setText(String.valueOf(arrayList.size()));
+
+                ArrayList commentModels = new ArrayList<CommentModel>();
+                for (int i = arrayList.size()-1; i >= 0; i--) {
+                    commentModels.add(arrayList.get(i));
+                }
+
+                showRecyclerListViewComment(arrayList);
+            }
+        });
+
+        initRetrofitNews.getNewsRelatedFromApi(newsCoverStoryModel.getIdNews());
+        initRetrofitNews.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
+            @Override
+            public void onSuccessGetData(ArrayList arrayList) {
+                if (!arrayList.isEmpty()) {
+                    Log.i("Size", String.valueOf(arrayList.size()));
+                    showRecyclerListViewNews(arrayList);
+                } else {
+                    Log.i("Size", String.valueOf(arrayList.size()));
+                }
+            }
+        });
+    }
+
     private void showRecyclerListViewImage(ArrayList<String> stringArrayList, String typeNews, String idNews) {
         //recyclerViewComment.setHasFixedSize(true);
         recyclerViewImage.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, true));
@@ -336,6 +336,12 @@ public class DetailNewsCoverStoryActivity extends AppCompatActivity {
         myIntent.putExtra(Intent.EXTRA_SUBJECT, shareSub);
         myIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
         startActivity(Intent.createChooser(myIntent, "Share \"Digimagz\" via"));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setRecyclerView();
     }
 
     @Override

@@ -615,6 +615,7 @@ public class ProfileFragment extends Fragment {
                     apiInterface.putUser(tvEmail.getText().toString(), tvName.getText().toString(), base64, birthdate, gender).enqueue(new Callback<DefaultStructureUser>() {
                         @Override
                         public void onResponse(Call<DefaultStructureUser> call, Response<DefaultStructureUser> response) {
+                            Log.e("PrifileUser", "Sukses");
                             ArrayList<UserModel> userModel = response.body().getData();
                             tvName.setText(userModel.get(0).getUserName());
                             if (userModel.get(0).getGender() != null && userModel.get(0).getDateBirth() != null) {
@@ -638,19 +639,21 @@ public class ProfileFragment extends Fragment {
                             }
                             tvEmail.setText(userModel.get(0).getEmail());
                             tvStatus.setText(userModel.get(0).getUserType());
-                            if(Patterns.WEB_URL.matcher(userModel.get(0).getUrlPic()).matches()) {
-                                Glide.with(getActivity())
-                                        .load(userModel.get(0).getUrlPic())
-                                        .placeholder(R.color.chef)
-                                        .into(imgProfile);
-                            }else{
-                                byte[] imageByteArray = Base64.decode(userModel.get(0).getUrlPic(), Base64.DEFAULT);
-                                Glide.with(getActivity())
-                                        .asBitmap()
-                                        .load(imageByteArray)
-                                        .placeholder(R.color.chef)
-                                        .into(imgProfile);
+                            if (userModel.get(0).getUrlPic() != null) {
+                                if(Patterns.WEB_URL.matcher(userModel.get(0).getUrlPic()).matches()) {
+                                    Glide.with(getActivity())
+                                            .load(userModel.get(0).getUrlPic())
+                                            .placeholder(R.color.chef)
+                                            .into(imgProfile);
+                                }else{
+                                    byte[] imageByteArray = Base64.decode(userModel.get(0).getUrlPic(), Base64.DEFAULT);
+                                    Glide.with(getActivity())
+                                            .asBitmap()
+                                            .load(imageByteArray)
+                                            .placeholder(R.color.chef)
+                                            .into(imgProfile);
 
+                                }
                             }
                             progressBar.setVisibility(View.GONE);
                         }

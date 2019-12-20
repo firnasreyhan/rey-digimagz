@@ -30,6 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAllCaps="false"
+                android:textSize="10sp"
                 style="@style/Widget.MaterialComponents.Button.Icon"
                 app:icon="@drawable/ic_file_download"
                 android:text="Download"/>

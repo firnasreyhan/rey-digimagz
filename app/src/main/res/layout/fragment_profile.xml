@@ -31,7 +31,7 @@
                         android:id="@+id/imgProfile"
                         android:layout_width="120dp"
                         android:layout_height="120dp"
-                        android:src="@android:color/darker_gray" />
+                        android:src="@drawable/missing_avatar" />
 
                     <ProgressBar
                         android:id="@+id/progressBar"
@@ -52,7 +52,6 @@
                     android:background="@drawable/roundcorner"
                     android:src="@drawable/ic_camera"/>
             </FrameLayout>
-
 
             <androidx.cardview.widget.CardView
                 android:layout_width="250dp"

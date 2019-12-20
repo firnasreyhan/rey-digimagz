@@ -78,20 +78,23 @@ public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerVie
 //                .load(commentModel.getProfilpicUrl())
 //                .into(holder.circleImageViewComment);
 
-        if(Patterns.WEB_URL.matcher(commentModel.getProfilpicUrl()).matches()) {
-            Glide.with(context)
-                    .load(commentModel.getProfilpicUrl())
-                    .placeholder(R.color.chef)
-                    .into(holder.circleImageViewComment);
-        }else{
-            byte[] imageByteArray = Base64.decode(commentModel.getProfilpicUrl(), Base64.DEFAULT);
-            Glide.with(context)
-                    .asBitmap()
-                    .load(imageByteArray)
-                    .placeholder(R.color.chef)
-                    .into(holder.circleImageViewComment);
+        if (commentModel.getProfilpicUrl() != null) {
+            if(Patterns.WEB_URL.matcher(commentModel.getProfilpicUrl()).matches()) {
+                Glide.with(context)
+                        .load(commentModel.getProfilpicUrl())
+                        .placeholder(R.color.chef)
+                        .into(holder.circleImageViewComment);
+            }else{
+                byte[] imageByteArray = Base64.decode(commentModel.getProfilpicUrl(), Base64.DEFAULT);
+                Glide.with(context)
+                        .asBitmap()
+                        .load(imageByteArray)
+                        .placeholder(R.color.chef)
+                        .into(holder.circleImageViewComment);
 
+            }
         }
+
         holder.textViewCommentUser.setText(commentModel.getEmail());
         holder.textViewCommentContent.setText(commentModel.getCommentText());
         holder.textViewCommentDate.setText(DateFormat.getDateInstance(DateFormat.LONG, new Locale("in", "ID")).format(date));
