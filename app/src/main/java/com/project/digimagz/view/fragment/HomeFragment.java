@@ -64,7 +64,7 @@ public class HomeFragment extends Fragment {
         }
     };
 
-   // private String[] urls = new String[] {"https://upload.wikimedia.org/wikipedia/commons/3/32/Jesus_und_Ehebrecherin.jpg", "https://upload.wikimedia.org/wikipedia/commons/3/32/Jesus_und_Ehebrecherin.jpg", "https://upload.wikimedia.org/wikipedia/commons/3/32/Jesus_und_Ehebrecherin.jpg"};
+    // private String[] urls = new String[] {"https://upload.wikimedia.org/wikipedia/commons/3/32/Jesus_und_Ehebrecherin.jpg", "https://upload.wikimedia.org/wikipedia/commons/3/32/Jesus_und_Ehebrecherin.jpg", "https://upload.wikimedia.org/wikipedia/commons/3/32/Jesus_und_Ehebrecherin.jpg"};
 
 
     @Override
@@ -205,11 +205,11 @@ public class HomeFragment extends Fragment {
             swiper.postDelayed(swiperRunnable, 3000);
 
             /**Timer swipeTimer = new Timer();
-            swipeTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    handler.post(Update);
-                }
+             swipeTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+            handler.post(Update);
+            }
             }, 3000, 3000);*/
 
             indicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {

@@ -3,6 +3,7 @@ package com.project.digimagz.model;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class NewsCoverStoryModel implements Serializable {
 
@@ -25,7 +26,7 @@ public class NewsCoverStoryModel implements Serializable {
     @SerializedName("DATE_NEWS")
     private String dateNews;
     @SerializedName("NEWS_IMAGE")
-    private String newsImage;
+    private ArrayList<String> newsImage;
     @SerializedName("LIKES")
     private int likes;
     @SerializedName("COMMENTS")
@@ -38,7 +39,7 @@ public class NewsCoverStoryModel implements Serializable {
     private String status;
     private int checkLike;
 
-    public NewsCoverStoryModel(String idNews, String nameCategory, String titleNews, String contentNews, String idCoverStory, String titleCoverStory, int viewsCount, int sharesCount, String dateNews, String newsImage, int likes, int comments, String editor, String verificator, String status, int checkLike) {
+    public NewsCoverStoryModel(String idNews, String nameCategory, String titleNews, String contentNews, String idCoverStory, String titleCoverStory, int viewsCount, int sharesCount, String dateNews, ArrayList<String> newsImage, int likes, int comments, String editor, String verificator, String status, int checkLike) {
         this.idNews = idNews;
         this.nameCategory = nameCategory;
         this.titleNews = titleNews;
@@ -129,11 +130,11 @@ public class NewsCoverStoryModel implements Serializable {
         this.dateNews = dateNews;
     }
 
-    public String getNewsImage() {
+    public ArrayList<String> getNewsImage() {
         return newsImage;
     }
 
-    public void setNewsImage(String newsImage) {
+    public void setNewsImage(ArrayList<String> newsImage) {
         this.newsImage = newsImage;
     }
 

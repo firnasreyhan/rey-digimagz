@@ -1,5 +1,6 @@
 package com.project.digimagz.view.activity;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -33,15 +34,19 @@ import com.project.digimagz.Constant;
 import com.google.android.material.textfield.TextInputEditText;
 import com.project.digimagz.R;
 import com.project.digimagz.adapter.RecyclerViewCommentAdapter;
+import com.project.digimagz.adapter.RecyclerViewImageAdapter;
 import com.project.digimagz.adapter.RecyclerViewNewsAdapter;
 import com.project.digimagz.api.InitRetrofit;
 import com.project.digimagz.model.CommentModel;
 import com.project.digimagz.model.NewsModel;
+import com.project.digimagz.model.UserModel;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
@@ -54,7 +59,7 @@ public class DetailNewsActivity extends AppCompatActivity {
     private ImageButton imageButtonSendComment, imageButtonLike, imageButtonDislike;
     private WebView webViewDetailNews;
     private TextInputEditText textInputEditTextComment;
-    private RecyclerView recyclerViewComment, recyclerViewNews;
+    private RecyclerView recyclerViewComment, recyclerViewNews, recyclerViewImage;
     private MaterialToolbar materialToolbar;
 
     private LinearLayout linearLayoutShare;
@@ -66,7 +71,9 @@ public class DetailNewsActivity extends AppCompatActivity {
     private Date date;
     private String newsImage, dataHtml;
 
-    private InitRetrofit initRetrofit, initRetrofitComment, initRetrofitNews, initRetrofitLike;
+    private InitRetrofit initRetrofit, initRetrofitComment, initRetrofitNews, initRetrofitLike, initRetrofitView, initRetrofitShare, initRetrofitUser;
+    private RecyclerViewCommentAdapter recyclerViewCommentAdapter;
+    private ArrayList<UserModel> userModels = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +94,9 @@ public class DetailNewsActivity extends AppCompatActivity {
         initRetrofitComment = new InitRetrofit();
         initRetrofitNews = new InitRetrofit();
         initRetrofitLike = new InitRetrofit();
+        initRetrofitView = new InitRetrofit();
+        initRetrofitShare = new InitRetrofit();
+        initRetrofitUser = new InitRetrofit();
 
         textViewTitle = findViewById(R.id.textViewTitle);
         textViewDate = findViewById(R.id.textViewDate);
@@ -103,12 +113,10 @@ public class DetailNewsActivity extends AppCompatActivity {
         textInputEditTextComment = findViewById(R.id.textInputEditTextComment);
         recyclerViewComment = findViewById(R.id.recyclerViewComment);
         recyclerViewNews = findViewById(R.id.recyclerViewNews);
+        recyclerViewImage = findViewById(R.id.recyclerViewImage);
         linearLayoutShare = findViewById(R.id.linearLayoutShare);
         webViewDetailNews = findViewById(R.id.webViewDetailNews);
         //webViewDetailNews.setBackgroundColor(Color.TRANSPARENT);
-
-        dataHtml = "<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"></head>";
-        dataHtml = dataHtml + "<body width=\"100%\" height=\"auto\">" + newsModel.getContentNews()  + "</body></html>";
 
         webViewDetailNews.getSettings().setJavaScriptEnabled(true);
         webViewDetailNews.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
@@ -127,19 +135,45 @@ public class DetailNewsActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        newsImage = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage();
+        if (newsModel.getNewsImage() != null) {
+            if (!newsModel.getNewsImage().isEmpty()) {
+                if (newsModel.getNameCategory().equalsIgnoreCase("Berita")) {
+                    newsImage = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
+                } else if (newsModel.getNameCategory().equalsIgnoreCase("Artikel")) {
+                    newsImage = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
+                } else if (newsModel.getNameCategory().equalsIgnoreCase("Galeri")) {
+                    newsImage = Constant.URL_IMAGE_GALLERY + newsModel.getIdNews() + "/" + newsModel.getNewsImage().get(0);
+                    showRecyclerListViewImage(newsModel.getNewsImage(), newsModel.getNameCategory(), newsModel.getIdNews());
+                }
+                Glide.with(DetailNewsActivity.this)
+                        .load(newsImage)
+                        .into(imageViewCover);
+            }
+        }
 
-        textViewTitle.setText(newsModel.getTitleNews());
-        textViewDate.setText(DateFormat.getDateInstance(DateFormat.LONG, new Locale("in", "ID")).format(date));
-        textViewContent.setText(Html.fromHtml(Html.fromHtml(newsModel.getContentNews()).toString()));
-        textViewCategory.setText(newsModel.getNameCategory());
+        if (newsModel.getTitleNews() != null) {
+            textViewTitle.setText(newsModel.getTitleNews());
+        }
+
+        if (date != null) {
+            textViewDate.setText(DateFormat.getDateInstance(DateFormat.LONG, new Locale("in", "ID")).format(date));
+        }
+
+        if (newsModel.getContentNews() != null) {
+            dataHtml = "<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"></head>";
+            dataHtml = dataHtml + "<body width=\"100%\" height=\"auto\">" + newsModel.getContentNews()  + "</body></html>";
+
+            webViewDetailNews.loadDataWithBaseURL(null, dataHtml, "text/html", "UTF-8", null);
+            webViewDetailNews.setWebViewClient(new WebViewClient());
+
+            textViewContent.setText(Html.fromHtml(Html.fromHtml(newsModel.getContentNews()).toString()));
+        }
+
+        if (newsModel.getNameCategory() != null) {
+            textViewCategory.setText(newsModel.getNameCategory());
+        }
+
         textViewLike.setText(String.valueOf(newsModel.getLikes()));
-        Glide.with(DetailNewsActivity.this)
-                .load(newsImage)
-                .into(imageViewCover);
-        webViewDetailNews.loadDataWithBaseURL(null, dataHtml,
-                "text/html", "UTF-8", null);
-        webViewDetailNews.setWebViewClient(new WebViewClient());
 
         if (newsModel.getEditor() != null) {
             textViewEditor.setText(newsModel.getEditor());
@@ -148,11 +182,56 @@ public class DetailNewsActivity extends AppCompatActivity {
             textViewVerificator.setText(newsModel.getVerificator());
         }
 
+        initRetrofitComment.getCommentFromApi(newsModel.getIdNews());
+        initRetrofitComment.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
+            @Override
+            public void onSuccessGetData(ArrayList arrayList) {
+                if (!arrayList.isEmpty()) {
+                    Log.i("Size", String.valueOf(arrayList.size()));
+                    textViewCountComment.setText(String.valueOf(arrayList.size()));
+
+                    ArrayList commentModels = new ArrayList<CommentModel>();
+                    for (int i = arrayList.size()-1; i >= 0; i--) {
+                        commentModels.add(arrayList.get(i));
+                    }
+
+                    showRecyclerListViewComment(commentModels);
+                } else {
+                    Log.i("Size", String.valueOf(arrayList.size()));
+                }
+            }
+        });
+
+        initRetrofitNews.getNewsRelatedFromApi(newsModel.getIdNews());
+        initRetrofitNews.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
+            @Override
+            public void onSuccessGetData(ArrayList arrayList) {
+                if (!arrayList.isEmpty()) {
+                    Log.i("Size", String.valueOf(arrayList.size()));
+                    showRecyclerListViewNews(arrayList);
+                } else {
+                    Log.i("Size", String.valueOf(arrayList.size()));
+                }
+            }
+        });
+
         if (firebaseUser != null) {
             imageButtonLike.setEnabled(true);
             imageButtonDislike.setEnabled(true);
             imageButtonSendComment.setEnabled(true);
             textInputEditTextComment.setEnabled(true);
+
+            initRetrofitUser.getUserFromApi(firebaseUser.getEmail());
+            initRetrofitUser.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
+                @Override
+                public void onSuccessGetData(ArrayList arrayList) {
+                    if (!arrayList.isEmpty()) {
+                        userModels.addAll(arrayList);
+                    }
+                }
+            });
+
+            initRetrofitView.postViewToApi(newsModel.getIdNews(), firebaseUser.getEmail());
 
             initRetrofitLike.getLikeFromApi(newsModel.getIdNews(), firebaseUser.getEmail());
             initRetrofitLike.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
@@ -195,35 +274,22 @@ public class DetailNewsActivity extends AppCompatActivity {
             imageButtonSendComment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(DetailNewsActivity.this, "Terima Kasih Atas Komentar Anda Dan Sedang Kami Moderasi", Toast.LENGTH_LONG).show();
-                    initRetrofit.postCommentToApi(newsModel.getIdNews(), firebaseUser.getEmail(), textInputEditTextComment.getText().toString());
-                    textInputEditTextComment.setText("");
-                }
-            });
+                    if (textInputEditTextComment.length() > 0) {
+                        //Toast.makeText(DetailNewsActivity.this, "Terima Kasih Atas Komentar Anda Dan Sedang Kami Moderasi", Toast.LENGTH_LONG).show();
+                        initRetrofit.postCommentToApi(newsModel.getIdNews(), firebaseUser.getEmail(), textInputEditTextComment.getText().toString());
 
-            initRetrofitComment.getCommentFromApi(newsModel.getIdNews());
-            initRetrofitComment.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
-                @Override
-                public void onSuccessGetData(ArrayList arrayList) {
-                    if (!arrayList.isEmpty()) {
-                        Log.i("Size", String.valueOf(arrayList.size()));
-                        textViewCountComment.setText(String.valueOf(arrayList.size()));
-                        showRecyclerListViewComment(arrayList);
-                    } else {
-                        Log.i("Size", String.valueOf(arrayList.size()));
-                    }
-                }
-            });
+                        Calendar calendar = Calendar.getInstance();
+                        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-            initRetrofitNews.getNewsRelatedFromApi(newsModel.getIdNews());
-            initRetrofitNews.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
-                @Override
-                public void onSuccessGetData(ArrayList arrayList) {
-                    if (!arrayList.isEmpty()) {
-                        Log.i("Size", String.valueOf(arrayList.size()));
-                        showRecyclerListViewNews(arrayList);
+                        recyclerViewCommentAdapter.add(new CommentModel(null, null,
+                                firebaseUser.getEmail(), textInputEditTextComment.getText().toString(),
+                                null, dateFormat.format(calendar.getTime()), userModels.get(0).getUserName(), userModels.get(0).getUrlPic()));
+
+                        textViewCountComment.setText(String.valueOf(Integer.parseInt(textViewCountComment.getText().toString()) + 1));
+
+                        textInputEditTextComment.setText("");
                     } else {
-                        Log.i("Size", String.valueOf(arrayList.size()));
+                        Toast.makeText(DetailNewsActivity.this, "Harap isi komentar dengan benar", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -242,17 +308,29 @@ public class DetailNewsActivity extends AppCompatActivity {
         });
     }
 
+    private void showRecyclerListViewImage(ArrayList<String> stringArrayList, String typeNews, String idNews) {
+        //recyclerViewComment.setHasFixedSize(true);
+        recyclerViewImage.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, true));
+        RecyclerViewImageAdapter recyclerViewImageAdapter = new RecyclerViewImageAdapter(stringArrayList, typeNews, idNews);
+        recyclerViewImage.setAdapter(recyclerViewImageAdapter);
+    }
+
     private void showRecyclerListViewComment(ArrayList<CommentModel> commentModelArrayList) {
-        recyclerViewComment.setHasFixedSize(true);
-        recyclerViewComment.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerViewCommentAdapter recyclerViewCommentAdapter = new RecyclerViewCommentAdapter(commentModelArrayList, getApplicationContext());
+        //recyclerViewComment.setHasFixedSize(true);
+        recyclerViewComment.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, true));
+        recyclerViewCommentAdapter = new RecyclerViewCommentAdapter(commentModelArrayList, getApplicationContext());
         recyclerViewComment.setAdapter(recyclerViewCommentAdapter);
     }
 
     private void showRecyclerListViewNews(ArrayList<NewsModel> newsModelArrayList) {
         recyclerViewNews.setHasFixedSize(true);
         recyclerViewNews.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerViewNewsAdapter recyclerViewNewsAdapter = new RecyclerViewNewsAdapter(newsModelArrayList, newsModelArrayList.size());
+        RecyclerViewNewsAdapter recyclerViewNewsAdapter;
+        if (newsModelArrayList.size() >= 3) {
+            recyclerViewNewsAdapter = new RecyclerViewNewsAdapter(newsModelArrayList, 3);
+        } else {
+            recyclerViewNewsAdapter = new RecyclerViewNewsAdapter(newsModelArrayList, newsModelArrayList.size());
+        }
         recyclerViewNews.setAdapter(recyclerViewNewsAdapter);
     }
 
@@ -270,6 +348,16 @@ public class DetailNewsActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (firebaseUser != null) {
+                initRetrofitShare.postShareToApi(newsModel.getIdNews(), firebaseUser.getEmail());
+            }
+        }
     }
 
 }

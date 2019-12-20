@@ -164,6 +164,9 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.emagz_menu:
                     //((VideoFragment) fragmentVideo).pauseVideo();
                     fragmentManager.beginTransaction().hide(fragmentActive).show(fragmentEmagz).commit();
+                    if (fragmentActive == fragmentEmagz) {
+                        ((EmagzFragment) fragmentEmagz).scrollUp();
+                    }
                     fragmentActive = fragmentEmagz;
                     doubleBackToExit = false;
                     return true;

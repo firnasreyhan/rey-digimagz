@@ -21,7 +21,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".view.activity.UpdateProfileActivity"></activity>
+        <activity android:name=".view.activity.UpdateProfileActivity"/>
         <activity android:name=".view.activity.ErrorActivity" />
         <activity android:name=".view.activity.DetailVideoActivity" />
         <activity android:name=".view.activity.ListNewsActivity" />
@@ -39,6 +39,8 @@
             android:name=".view.activity.MainActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:launchMode="singleTop" />
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"/>
 
         <service
             android:name=".service.FirebaseMessaging"

@@ -18,7 +18,7 @@
 
     <item
         android:id="@+id/emagz_menu"
-        android:title="Emagz"
+        android:title="Emag"
         android:icon="@drawable/selector_emagz_menu"/>
 
     <item

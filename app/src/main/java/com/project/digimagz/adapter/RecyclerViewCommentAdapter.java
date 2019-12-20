@@ -2,7 +2,9 @@ package com.project.digimagz.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Base64;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,17 +67,41 @@ public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerVie
             }
         }
 
-        if (format != null) {
-            if (format.equalsIgnoreCase(".jpg") || format.equalsIgnoreCase(".png")) {
-                Glide.with(context)
-                        .load(commentModel.getProfilpicUrl())
-                        .into(holder.circleImageViewComment);
-            }
+//        if (format != null) {
+//            if (format.equalsIgnoreCase(".jpg") || format.equalsIgnoreCase(".png")) {
+//                Glide.with(context)
+//                        .load(commentModel.getProfilpicUrl())
+//                        .into(holder.circleImageViewComment);
+//            }
+//        }
+//        Glide.with(context)
+//                .load(commentModel.getProfilpicUrl())
+//                .into(holder.circleImageViewComment);
+
+        if(Patterns.WEB_URL.matcher(commentModel.getProfilpicUrl()).matches()) {
+            Glide.with(context)
+                    .load(commentModel.getProfilpicUrl())
+                    .placeholder(R.color.chef)
+                    .into(holder.circleImageViewComment);
+        }else{
+            byte[] imageByteArray = Base64.decode(commentModel.getProfilpicUrl(), Base64.DEFAULT);
+            Glide.with(context)
+                    .asBitmap()
+                    .load(imageByteArray)
+                    .placeholder(R.color.chef)
+                    .into(holder.circleImageViewComment);
+
         }
         holder.textViewCommentUser.setText(commentModel.getEmail());
         holder.textViewCommentContent.setText(commentModel.getCommentText());
         holder.textViewCommentDate.setText(DateFormat.getDateInstance(DateFormat.LONG, new Locale("in", "ID")).format(date));
 
+    }
+
+    public void add(CommentModel newComment){
+        commentModelArrayList.add(newComment);
+        notifyItemInserted(commentModelArrayList.size()-1);
+        notifyItemRangeChanged(0, commentModelArrayList.size()-1);
     }
 
     @Override

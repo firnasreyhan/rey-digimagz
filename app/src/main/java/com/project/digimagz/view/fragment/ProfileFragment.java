@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +59,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -88,6 +90,7 @@ public class ProfileFragment extends Fragment {
     protected static final int SELECT_FILE = 2;
 
     private Retrofit retrofit;
+    private InitRetrofit initRetrofit;
     private ApiInterface apiInterface;
 
 
@@ -118,6 +121,7 @@ public class ProfileFragment extends Fragment {
         progressBarEdit = view.findViewById(R.id.progressBarEditNama);
 
         initRetrofitUser = new InitRetrofit();
+        initRetrofit = new InitRetrofit();
         retrofit = ApiClient.getRetrofit();
         apiInterface = retrofit.create(ApiInterface.class);
 
@@ -157,10 +161,22 @@ public class ProfileFragment extends Fragment {
                             }
                             tvEmail.setText(userModel.get(0).getEmail());
                             tvStatus.setText(userModel.get(0).getUserType());
-                            Glide.with(getActivity())
-                                    .load(userModel.get(0).getUrlPic())
-                                    .placeholder(R.color.chef)
-                                    .into(imgProfile);
+                            if (userModel.get(0).getUrlPic() != null) {
+                                if(Patterns.WEB_URL.matcher(userModel.get(0).getUrlPic()).matches()) {
+                                    Glide.with(getActivity())
+                                            .load(userModel.get(0).getUrlPic())
+                                            .placeholder(R.color.chef)
+                                            .into(imgProfile);
+                                }else{
+                                    byte[] imageByteArray = Base64.decode(userModel.get(0).getUrlPic(), Base64.DEFAULT);
+                                    Glide.with(getActivity())
+                                            .asBitmap()
+                                            .load(imageByteArray)
+                                            .placeholder(R.color.chef)
+                                            .into(imgProfile);
+
+                                }
+                            }
                         }
 
                         @Override
@@ -180,8 +196,8 @@ public class ProfileFragment extends Fragment {
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //selectImage();
-                Toast.makeText(getActivity(), "Soon!", Toast.LENGTH_SHORT);
+                selectImage();
+             //   Toast.makeText(getActivity(), "Soon!", Toast.LENGTH_SHORT);
             }
         });
 
@@ -581,22 +597,71 @@ public class ProfileFragment extends Fragment {
                     final String base64 = saveBitmapToFile(comUri, requestCode == REQUEST_CAMERA ? true : false);
 
                     progressBar.setVisibility(View.VISIBLE);
-                    int ind = tvEmail.getText().toString().indexOf("@");
-                    apiInterface.putUserPhoto(tvEmail.getText().toString().substring(0, ind), base64).enqueue(new Callback<DefaultStructureUser>() {
+                    String gender;
+                    if (tvGender.getText().toString().equalsIgnoreCase("Laki-laki")){
+                        gender = "L";
+                    }else{
+                        gender = "P";
+                    }
+                   String birthdate = tvAge.getText().toString();
+                    SimpleDateFormat dateFormatterText = new SimpleDateFormat("dd MMMM yyyy", new Locale("in", "ID"));
+                    try {
+                        Date date = dateFormatterText.parse(birthdate);
+                        dateFormatterText = new SimpleDateFormat("yyyy-MM-dd", new Locale("in", "ID"));
+                        birthdate = dateFormatterText.format(date);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    apiInterface.putUser(tvEmail.getText().toString(), tvName.getText().toString(), base64, birthdate, gender).enqueue(new Callback<DefaultStructureUser>() {
                         @Override
                         public void onResponse(Call<DefaultStructureUser> call, Response<DefaultStructureUser> response) {
-                            Glide.with(getActivity())
-                                    .asBitmap()
-                                    .load(Base64.decode(base64, Base64.DEFAULT))
-                                    .placeholder(R.color.chef)
-                                    .into(imgProfile);
+                            ArrayList<UserModel> userModel = response.body().getData();
+                            tvName.setText(userModel.get(0).getUserName());
+                            if (userModel.get(0).getGender() != null && userModel.get(0).getDateBirth() != null) {
+                                if (userModel.get(0).getGender().equalsIgnoreCase("L")) {
+                                    tvGender.setText("Laki-laki");
+                                } else if (userModel.get(0).getGender().equalsIgnoreCase("P")) {
+                                    tvGender.setText("Perempuan");
+                                }
+                                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", new Locale("in", "ID"));
+                                try {
+                                    Date date = format.parse(userModel.get(0).getDateBirth());
+                                    SimpleDateFormat dateFormatterText = new SimpleDateFormat("dd MMMM yyyy", new Locale("in", "ID"));
+                                    tvAge.setText(dateFormatterText.format(date.getTime()));
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                Intent intent = new Intent(getContext(), UpdateProfileActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                            }
+                            tvEmail.setText(userModel.get(0).getEmail());
+                            tvStatus.setText(userModel.get(0).getUserType());
+                            if(Patterns.WEB_URL.matcher(userModel.get(0).getUrlPic()).matches()) {
+                                Glide.with(getActivity())
+                                        .load(userModel.get(0).getUrlPic())
+                                        .placeholder(R.color.chef)
+                                        .into(imgProfile);
+                            }else{
+                                byte[] imageByteArray = Base64.decode(userModel.get(0).getUrlPic(), Base64.DEFAULT);
+                                Glide.with(getActivity())
+                                        .asBitmap()
+                                        .load(imageByteArray)
+                                        .placeholder(R.color.chef)
+                                        .into(imgProfile);
+
+                            }
+                            progressBar.setVisibility(View.GONE);
                         }
 
                         @Override
                         public void onFailure(Call<DefaultStructureUser> call, Throwable t) {
+                            Log.e("ErrorProfile", t.getMessage());
 
                         }
                     });
+
 
                 }
             }

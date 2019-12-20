@@ -9,7 +9,15 @@ import android.provider.MediaStore;
 public class Constant {
     public static final String URL_IMAGE_NEWS = "http://digimon.kristomoyo.com/images/news/";
     public static final String URL_IMAGE_STORY = "http://digimon.kristomoyo.com/images/coverstory/";
-    public static final String URL = "http://digimagz.kristomoyo.com/";
+    public static final String URL_IMAGE_GALLERY = "http://digimon.kristomoyo.com/images/gallery/";
+    public static final String URL_IMAGE_EMAGZ = "http://digimon.kristomoyo.com/emagazine/thumbnail/";
+    public static final String URL = "http://digimon.kristomoyo.com/";
+
+//    public static final String URL_IMAGE_NEWS = "http://pn10mobprd.ptpn10.co.id:8598/images/news/";
+//    public static final String URL_IMAGE_STORY = "http://pn10mobprd.ptpn10.co.id:8598/images/coverstory/";
+//    public static final String URL_IMAGE_GALLERY = "http://pn10mobprd.ptpn10.co.id:8598/images/gallery/";
+//    public static final String URL_IMAGE_EMAGZ = "http://pn10mobprd.ptpn10.co.id:8598/emagazine/thumbnail/";
+//    public static final String URL = "http://pn10mobprd.ptpn10.co.id:8598/";
 
     public static int getOrientationFromURI(Context context, Uri contentUri) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -27,7 +35,7 @@ public class Constant {
         String id = uri[uri.length-1];
         String sel = MediaStore.Images.Media._ID + "=?";
         Cursor cursor = context.getContentResolver().query(contentUri, proj, sel, new String[] {id}, null);
-        if(cursor != null && cursor.moveToFirst()){;
+        if(cursor != null && cursor.moveToFirst()){
             int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.ORIENTATION);
             orient = cursor.getInt(column_index);
         }

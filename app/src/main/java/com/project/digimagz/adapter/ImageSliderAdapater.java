@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.bumptech.glide.Glide;
+import com.project.digimagz.Constant;
 import com.project.digimagz.R;
 import com.project.digimagz.model.NewsModel;
 import com.project.digimagz.view.activity.DetailNewsActivity;
@@ -66,8 +67,17 @@ public class ImageSliderAdapater extends PagerAdapter {
             e.printStackTrace();
         }
 
+        String imageUrl = "";
+        if (newsModel.getNameCategory().equalsIgnoreCase("Berita")) {
+            imageUrl = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
+        } else if (newsModel.getNameCategory().equalsIgnoreCase("Artikel")) {
+            imageUrl = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
+        } else if (newsModel.getNameCategory().equalsIgnoreCase("Galeri")) {
+            imageUrl = Constant.URL_IMAGE_GALLERY + newsModel.getIdNews() + "/" + newsModel.getNewsImage().get(0);
+        }
+
         Glide.with(view.getContext())
-                .load("http://digimon.kristomoyo.com/images/news/" + newsModel.getNewsImage())
+                .load(imageUrl)
                 .into(imageView);
 
         textViewTitle.setText(newsModel.getTitleNews());

@@ -26,6 +26,8 @@
                 android:id="@+id/imageViewThumbnailVideo"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
                 android:src="@android:color/darker_gray"
                 android:layout_gravity="center"/>
 

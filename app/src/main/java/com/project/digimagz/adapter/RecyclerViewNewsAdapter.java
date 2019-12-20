@@ -57,7 +57,14 @@ public class RecyclerViewNewsAdapter extends RecyclerView.Adapter<RecyclerViewNe
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         final NewsModel newsModel = newsModelArrayList.get(position);
 
-        newsImage = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage();
+        if (newsModel.getNameCategory().equalsIgnoreCase("Berita")) {
+            newsImage = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
+        } else if (newsModel.getNameCategory().equalsIgnoreCase("Artikel")) {
+            newsImage = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
+        } else if (newsModel.getNameCategory().equalsIgnoreCase("Galeri")) {
+            newsImage = Constant.URL_IMAGE_GALLERY + newsModel.getIdNews() + "/" + newsModel.getNewsImage().get(0);
+        }
+
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         initRetrofitLike = new InitRetrofit();
 

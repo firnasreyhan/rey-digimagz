@@ -3,6 +3,7 @@ package com.project.digimagz.api;
 import com.google.gson.JsonObject;
 import com.project.digimagz.model.CommentModel;
 import com.project.digimagz.model.DefaultStructureComment;
+import com.project.digimagz.model.DefaultStructureEmagz;
 import com.project.digimagz.model.DefaultStructureLike;
 import com.project.digimagz.model.DefaultStructureNews;
 import com.project.digimagz.model.DefaultStructureNewsCoverStory;
@@ -11,6 +12,7 @@ import com.project.digimagz.model.DefaultStructureUser;
 import com.project.digimagz.model.DefaultStructureVideo;
 import com.project.digimagz.model.LikeModel;
 import com.project.digimagz.model.UserModel;
+import com.project.digimagz.model.ViewModel;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -41,6 +43,9 @@ public interface ApiInterface {
     @GET("story/index_get")
     Call<DefaultStructureStory> getStory();
 
+    @GET("emagz/index_get")
+    Call<DefaultStructureEmagz> getEmagz();
+
     @GET("newscover/index_get")
     Call<DefaultStructureNewsCoverStory> getNewsCoverStory(@Query("id") String id);
 
@@ -64,6 +69,12 @@ public interface ApiInterface {
 
     @POST("user/index_post")
     Call<UserModel> postUser(@Body JsonObject jsonObject);
+
+    @POST("dummy/click")
+    Call<ViewModel> postView(@Body JsonObject jsonObject);
+
+    @POST("dummy/share")
+    Call<ViewModel> postShare(@Body JsonObject jsonObject);
 
     @FormUrlEncoded
     @HTTP(method = "DELETE", path = "likes/index_delete", hasBody = true)

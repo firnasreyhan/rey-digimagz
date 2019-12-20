@@ -55,7 +55,14 @@ public class RecyclerViewNewsCoverStoryAdapter extends RecyclerView.Adapter<Recy
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         final NewsCoverStoryModel newsCoverStoryModel = newsCoverStoryModelArrayList.get(position);
 
-        newsImage = Constant.URL_IMAGE_NEWS + newsCoverStoryModel.getNewsImage();
+        if (newsCoverStoryModel.getNameCategory().equalsIgnoreCase("Berita")) {
+            newsImage = Constant.URL_IMAGE_NEWS + newsCoverStoryModel.getNewsImage().get(0);
+        } else if (newsCoverStoryModel.getNameCategory().equalsIgnoreCase("Artikel")) {
+            newsImage = Constant.URL_IMAGE_NEWS + newsCoverStoryModel.getNewsImage().get(0);
+        } else if (newsCoverStoryModel.getNameCategory().equalsIgnoreCase("Galeri")) {
+            newsImage = Constant.URL_IMAGE_GALLERY + newsCoverStoryModel.getIdNews() + "/" + newsCoverStoryModel.getNewsImage().get(0);
+        }
+
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         initRetrofitLike = new InitRetrofit();
 
