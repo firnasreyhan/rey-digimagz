@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Base64;
@@ -34,6 +35,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -93,6 +95,7 @@ public class ProfileFragment extends Fragment {
     private InitRetrofit initRetrofit;
     private ApiInterface apiInterface;
 
+    private File profileFile;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -443,9 +446,13 @@ public class ProfileFragment extends Fragment {
             public void onClick(DialogInterface dialog, int item) {
                 if (items[item].equals("Ambil Foto")) {
                     try {
+                        profileFile = new File(getActivity().getExternalCacheDir().toString()+"/Digimagz"
+                                +System.currentTimeMillis());
+                        Uri uri = FileProvider.getUriForFile(getActivity(), getActivity().getApplicationContext()
+                                .getPackageName() + ".provider", profileFile);
                         //use standard intent to capture an image
                         Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        //we will handle the returned data in onActivityResult
+                        captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                         captureIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                         startActivityForResult(captureIntent, REQUEST_CAMERA);
                     } catch (ActivityNotFoundException anfe) {
@@ -570,7 +577,7 @@ public class ProfileFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_CAMERA || requestCode == SELECT_FILE) {
+            if (requestCode == SELECT_FILE) {
                 Uri imageUri = CropImage.getPickImageResultUri(getContext(), data);
 
                 // For API >= 23 we need to check specifically that we have permissions to read external storage.
@@ -582,9 +589,11 @@ public class ProfileFragment extends Fragment {
                     // no permissions required or already grunted, can start crop image activity
                     startCropImageActivity(imageUri);
                 }
-            }
-
-            if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            }else if(requestCode == REQUEST_CAMERA){
+                Uri uri = FileProvider.getUriForFile(getActivity(), getActivity().getApplicationContext()
+                        .getPackageName() + ".provider", profileFile);
+                startCropImageActivity(uri);
+            }else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
                 CropImage.ActivityResult result = CropImage.getActivityResult(data);
                 if (resultCode == RESULT_OK) {
                     File compFile = null;
@@ -603,7 +612,7 @@ public class ProfileFragment extends Fragment {
                     }else{
                         gender = "P";
                     }
-                   String birthdate = tvAge.getText().toString();
+                    String birthdate = tvAge.getText().toString();
                     SimpleDateFormat dateFormatterText = new SimpleDateFormat("dd MMMM yyyy", new Locale("in", "ID"));
                     try {
                         Date date = dateFormatterText.parse(birthdate);
