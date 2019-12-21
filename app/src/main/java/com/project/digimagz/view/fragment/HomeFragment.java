@@ -131,14 +131,14 @@ public class HomeFragment extends Fragment {
     }
 
     private void setRecyclerView() {
-        if(getActivity() == null && !isAdded()) return;
-
         swiper.removeCallbacks(swiperRunnable);
 
         initRetrofitSlider.getSliderFromApi();
         initRetrofitSlider.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
             @Override
             public void onSuccessGetData(ArrayList arrayList) {
+                if(!isAdded()) return;
+
                 if (!arrayList.isEmpty()) {
                     Log.i("Size", String.valueOf(arrayList.size()));
                     showSlider(arrayList);
@@ -152,6 +152,8 @@ public class HomeFragment extends Fragment {
         initRetrofitTrending.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
             @Override
             public void onSuccessGetData(ArrayList arrayList) {
+                if(!isAdded()) return;
+
                 if (!arrayList.isEmpty()) {
                     Log.i("Size", String.valueOf(arrayList.size()));
                     showRecyclerListViewTrending(arrayList);
@@ -166,6 +168,8 @@ public class HomeFragment extends Fragment {
         initRetrofitStory.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
             @Override
             public void onSuccessGetData(ArrayList arrayList) {
+                if(!isAdded()) return;
+
                 if (!arrayList.isEmpty()) {
                     Log.i("Size", String.valueOf(arrayList.size()));
                     showRecyclerListViewCoverStory(arrayList);
@@ -179,6 +183,8 @@ public class HomeFragment extends Fragment {
         initRetrofitNews.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
             @Override
             public void onSuccessGetData(ArrayList arrayList) {
+                if(!isAdded()) return;
+
                 if (!arrayList.isEmpty()) {
                     Log.i("Size", String.valueOf(arrayList.size()));
                     showRecyclerListViewNews(arrayList);
