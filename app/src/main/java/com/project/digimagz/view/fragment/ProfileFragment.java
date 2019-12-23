@@ -13,7 +13,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Base64;
@@ -26,7 +25,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -50,23 +48,25 @@ import com.project.digimagz.Constant;
 import com.project.digimagz.R;
 import com.project.digimagz.api.ApiClient;
 import com.project.digimagz.api.ApiInterface;
-import com.project.digimagz.api.InitRetrofit;
 import com.project.digimagz.model.DefaultStructureUser;
 import com.project.digimagz.model.UserModel;
 import com.project.digimagz.view.activity.MainActivity;
 import com.project.digimagz.view.activity.UpdateProfileActivity;
 import com.theartofdev.edmodo.cropper.CropImage;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
+import java.net.SocketTimeoutException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import id.zelory.compressor.Compressor;
@@ -79,20 +79,12 @@ import static android.app.Activity.RESULT_OK;
 
 public class ProfileFragment extends Fragment {
 
-    private MaterialButton materialButtonSignOut;
     private TextView tvName, tvEmail, tvPhone, tvAge, tvGender, tvStatus;
     private CircleImageView imgProfile;
-    private LinearLayout phoneLayout;
-    private ImageButton btnCamera, btnEditName, btnEditGender, btnEditAge;
     private ProgressBar progressBar, progressBarEdit;
-    private InitRetrofit initRetrofitUser;
-    String email;
-    int iend;
-    protected static final int REQUEST_CAMERA = 1;
-    protected static final int SELECT_FILE = 2;
+    private static final int REQUEST_CAMERA = 1;
+    private static final int SELECT_FILE = 2;
 
-    private Retrofit retrofit;
-    private InitRetrofit initRetrofit;
     private ApiInterface apiInterface;
 
     private File profileFile;
@@ -107,7 +99,7 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        materialButtonSignOut = view.findViewById(R.id.materialButtonSignOut);
+        MaterialButton materialButtonSignOut = view.findViewById(R.id.materialButtonSignOut);
         tvName = view.findViewById(R.id.tvNameProfile);
         tvEmail = view.findViewById(R.id.tvEmailProfile);
         tvPhone = view.findViewById(R.id.tvPhoneProfile);
@@ -115,17 +107,14 @@ public class ProfileFragment extends Fragment {
         tvGender = view.findViewById(R.id.tvGender);
         tvStatus = view.findViewById(R.id.tvStatus);
         imgProfile = view.findViewById(R.id.imgProfile);
-        phoneLayout = view.findViewById(R.id.phoneLayout);
-        btnCamera = view.findViewById(R.id.btnCamera);
-        btnEditName = view.findViewById(R.id.btnEditNama);
-        btnEditGender = view.findViewById(R.id.btnEditJenisKelamin);
-        btnEditAge = view.findViewById(R.id.btnEditUsia);
+        ImageButton btnCamera = view.findViewById(R.id.btnCamera);
+        ImageButton btnEditName = view.findViewById(R.id.btnEditNama);
+        ImageButton btnEditGender = view.findViewById(R.id.btnEditJenisKelamin);
+        ImageButton btnEditAge = view.findViewById(R.id.btnEditUsia);
         progressBar = view.findViewById(R.id.progressBar);
         progressBarEdit = view.findViewById(R.id.progressBarEditNama);
 
-        initRetrofitUser = new InitRetrofit();
-        initRetrofit = new InitRetrofit();
-        retrofit = ApiClient.getRetrofit();
+        Retrofit retrofit = ApiClient.getRetrofit();
         apiInterface = retrofit.create(ApiInterface.class);
 
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -135,11 +124,11 @@ public class ProfileFragment extends Fragment {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    int subindex = firebaseUser.getEmail().indexOf("@");
                     //apiInterface.getUser(firebaseUser.getEmail().substring(0, subindex)).enqueue(new Callback<DefaultStructureUser>() {
                     apiInterface.getUser(firebaseUser.getEmail()).enqueue(new Callback<DefaultStructureUser>() {
                         @Override
-                        public void onResponse(Call<DefaultStructureUser> call, Response<DefaultStructureUser> response) {
+                        public void onResponse(@NotNull Call<DefaultStructureUser> call, @NotNull Response<DefaultStructureUser> response) {
+                            assert response.body() != null;
                             Log.d("getUser", String.valueOf(response.body().getData().size()));
                             ArrayList<UserModel> userModel = response.body().getData();
                             tvName.setText(userModel.get(0).getUserName());
@@ -153,6 +142,7 @@ public class ProfileFragment extends Fragment {
                                 try {
                                     Date date = format.parse(userModel.get(0).getDateBirth());
                                     SimpleDateFormat dateFormatterText = new SimpleDateFormat("dd MMMM yyyy", new Locale("in", "ID"));
+                                    assert date != null;
                                     tvAge.setText(dateFormatterText.format(date.getTime()));
                                 } catch (ParseException e) {
                                     e.printStackTrace();
@@ -166,12 +156,13 @@ public class ProfileFragment extends Fragment {
                             tvStatus.setText(userModel.get(0).getUserType());
                             if (userModel.get(0).getUrlPic() != null) {
                                 if(Patterns.WEB_URL.matcher(userModel.get(0).getUrlPic()).matches()) {
-                                    Glide.with(getActivity())
+                                    Glide.with(Objects.requireNonNull(getActivity()))
                                             .load(userModel.get(0).getUrlPic())
                                             .placeholder(R.color.chef)
                                             .into(imgProfile);
                                 }else{
-                                    byte[] imageByteArray = Base64.decode(userModel.get(0).getUrlPic(), Base64.DEFAULT);
+                                    byte[] imageByteArray;
+                                    imageByteArray = Base64.decode(userModel.get(0).getUrlPic(), Base64.DEFAULT);
                                     Glide.with(getActivity())
                                             .asBitmap()
                                             .load(imageByteArray)
@@ -183,8 +174,8 @@ public class ProfileFragment extends Fragment {
                         }
 
                         @Override
-                        public void onFailure(Call<DefaultStructureUser> call, Throwable t) {
-                            Log.e("ErrorProfile", t.getMessage());
+                        public void onFailure(@NotNull Call<DefaultStructureUser> call, @NotNull Throwable t) {
+                            Log.e("ErrorProfile", Objects.requireNonNull(t.getMessage()));
                         }
                     });
 
@@ -253,7 +244,8 @@ public class ProfileFragment extends Fragment {
         etEditName.setText(tvName.getText().toString());
         etEditName.setSelection(tvName.getText().length());
 
-        final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        final InputMethodManager imm = (InputMethodManager) Objects.requireNonNull(getActivity()).getSystemService(Context.INPUT_METHOD_SERVICE);
+        assert imm != null;
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
         alert.show();
 
@@ -267,16 +259,17 @@ public class ProfileFragment extends Fragment {
                 imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
                 apiInterface.putUserName(tvEmail.getText().toString(), etEditName.getText().toString()).enqueue(new Callback<DefaultStructureUser>() {
                     @Override
-                    public void onResponse(Call<DefaultStructureUser> call, Response<DefaultStructureUser> response) {
+                    public void onResponse(@NotNull Call<DefaultStructureUser> call, @NotNull Response<DefaultStructureUser> response) {
                         progressBarEdit.setVisibility(View.GONE);
 //                        UserModel userModel = response.body().getData();
+                        assert response.body() != null;
                         ArrayList<UserModel> userModels = response.body().getData();
                         tvName.setText(userModels.get(0).getUserName());
                     }
 
                     @Override
-                    public void onFailure(Call<DefaultStructureUser> call, Throwable t) {
-                        Log.e("PUT", t.getMessage());
+                    public void onFailure(@NotNull Call<DefaultStructureUser> call, @NotNull Throwable t) {
+                        Log.e("PUT", Objects.requireNonNull(t.getMessage()));
                     }
                 });
             }
@@ -332,7 +325,8 @@ public class ProfileFragment extends Fragment {
 //        etEditName.setText(tvName.getText().toString());
 //        etEditName.setSelection(tvName.getText().length());
 
-        final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        final InputMethodManager imm = (InputMethodManager) Objects.requireNonNull(getActivity()).getSystemService(Context.INPUT_METHOD_SERVICE);
+        assert imm != null;
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
         alert.show();
 
@@ -394,7 +388,8 @@ public class ProfileFragment extends Fragment {
             etEditAge.setSelection(tvAge.getText().length());
         }
 
-        final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        final InputMethodManager imm = (InputMethodManager) Objects.requireNonNull(getActivity()).getSystemService(Context.INPUT_METHOD_SERVICE);
+        assert imm != null;
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
         alert.show();
 
@@ -446,7 +441,7 @@ public class ProfileFragment extends Fragment {
             public void onClick(DialogInterface dialog, int item) {
                 if (items[item].equals("Ambil Foto")) {
                     try {
-                        profileFile = new File(getActivity().getExternalCacheDir().toString()+"/Digimagz"
+                        profileFile = new File(Objects.requireNonNull(Objects.requireNonNull(getActivity()).getExternalCacheDir()).toString()+"/Digimagz"
                                 +System.currentTimeMillis());
                         Uri uri = FileProvider.getUriForFile(getActivity(), getActivity().getApplicationContext()
                                 .getPackageName() + ".provider", profileFile);
@@ -478,14 +473,14 @@ public class ProfileFragment extends Fragment {
 
     }
 
-    public static Bitmap rotateImage(Bitmap source, float angle) {
+    private static Bitmap rotateImage(Bitmap source, float angle) {
         Matrix matrix = new Matrix();
         matrix.postRotate(angle);
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
                 matrix, true);
     }
 
-    public String saveBitmapToFile(Uri uri, boolean fromCamera) {
+    private String saveBitmapToFile(Uri uri, boolean fromCamera) {
         try {
 
             // BitmapFactory options to downsize the image
@@ -494,11 +489,12 @@ public class ProfileFragment extends Fragment {
             o.inSampleSize = 6;
             // factor of downsizing the image
 
-            InputStream imageStream = getActivity().getContentResolver().openInputStream(uri);
+            InputStream imageStream = Objects.requireNonNull(getActivity()).getContentResolver().openInputStream(uri);
 
             //Bitmap selectedBitmap = null;
             BitmapFactory.decodeStream(imageStream, null, o);
 
+            assert imageStream != null;
             imageStream.close();
 
             // The new size we want to scale to
@@ -519,13 +515,16 @@ public class ProfileFragment extends Fragment {
 
             //Bitmap rotatedBMP = rotateImage(selectedBitmap, 90);
 
-            String[] projection2 = new String[]{
-                    MediaStore.Images.ImageColumns.ORIENTATION
-            };
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                String[] projection2 = new String[]{
+                        MediaStore.Images.ImageColumns.ORIENTATION
+                };
+            }
 
             int orientation = Constant.getOrientationFromURI(getContext(), Uri.parse(uri.getPath()));
             Bitmap rotatedBMP = rotateImage(selectedBitmap, orientation);
 
+            assert imageStream != null;
             imageStream.close();
 
             //FileOutputStream outputStream = new FileOutputStream(file);
@@ -533,7 +532,7 @@ public class ProfileFragment extends Fragment {
 
             rotatedBMP.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
 
-            imgProfile.setImageBitmap(rotatedBMP);
+            //imgProfile.setImageBitmap(rotatedBMP);
 
             byte[] byteGambar = outputStream.toByteArray();
 
@@ -571,26 +570,23 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    private Uri mCropImageUri;
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == SELECT_FILE) {
-                Uri imageUri = CropImage.getPickImageResultUri(getContext(), data);
+                Uri imageUri = CropImage.getPickImageResultUri(Objects.requireNonNull(getContext()), data);
 
                 // For API >= 23 we need to check specifically that we have permissions to read external storage.
                 if (CropImage.isReadExternalStoragePermissionsRequired(getContext(), imageUri)) {
                     // request permissions and handle the result in onRequestPermissionsResult()
-                    mCropImageUri = imageUri;
                     requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
                 } else {
                     // no permissions required or already grunted, can start crop image activity
                     startCropImageActivity(imageUri);
                 }
             }else if(requestCode == REQUEST_CAMERA){
-                Uri uri = FileProvider.getUriForFile(getActivity(), getActivity().getApplicationContext()
+                Uri uri = FileProvider.getUriForFile(Objects.requireNonNull(getActivity()), getActivity().getApplicationContext()
                         .getPackageName() + ".provider", profileFile);
                 startCropImageActivity(uri);
             }else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
@@ -598,7 +594,7 @@ public class ProfileFragment extends Fragment {
                 if (resultCode == RESULT_OK) {
                     File compFile = null;
                     try {
-                        compFile = new Compressor(getContext()).compressToFile(new File(result.getUri().getPath()));
+                        compFile = new Compressor(Objects.requireNonNull(getContext())).compressToFile(new File(Objects.requireNonNull(result.getUri().getPath())));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -623,8 +619,9 @@ public class ProfileFragment extends Fragment {
                     }
                     apiInterface.putUser(tvEmail.getText().toString(), tvName.getText().toString(), base64, birthdate, gender).enqueue(new Callback<DefaultStructureUser>() {
                         @Override
-                        public void onResponse(Call<DefaultStructureUser> call, Response<DefaultStructureUser> response) {
+                        public void onResponse(@NotNull Call<DefaultStructureUser> call, @NotNull Response<DefaultStructureUser> response) {
                             Log.e("PrifileUser", "Sukses");
+                            assert response.body() != null;
                             ArrayList<UserModel> userModel = response.body().getData();
                             tvName.setText(userModel.get(0).getUserName());
                             if (userModel.get(0).getGender() != null && userModel.get(0).getDateBirth() != null) {
@@ -669,12 +666,12 @@ public class ProfileFragment extends Fragment {
 
                         @Override
                         public void onFailure(Call<DefaultStructureUser> call, Throwable t) {
-                            Log.e("ErrorProfile", t.getMessage());
-
+                            if (t instanceof SocketTimeoutException) {
+                                Toast.makeText(getContext(), "Ubah profil gagal, silahkan coba lagi", Toast.LENGTH_SHORT).show();
+                                progressBar.setVisibility(View.GONE);
+                            }
                         }
                     });
-
-
                 }
             }
         }

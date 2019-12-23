@@ -2,18 +2,14 @@ package com.project.digimagz.view.activity;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Html;
-import android.view.Display;
-import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -23,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,20 +30,21 @@ import com.google.firebase.auth.FirebaseUser;
 import com.project.digimagz.Constant;
 import com.google.android.material.textfield.TextInputEditText;
 import com.project.digimagz.R;
+import com.project.digimagz.adapter.ImageSliderGalleryAdapater;
+import com.project.digimagz.adapter.ImageSliderNewsAdapater;
 import com.project.digimagz.adapter.RecyclerViewCommentAdapter;
-import com.project.digimagz.adapter.RecyclerViewImageAdapter;
 import com.project.digimagz.adapter.RecyclerViewNewsAdapter;
 import com.project.digimagz.api.InitRetrofit;
 import com.project.digimagz.model.CommentModel;
 import com.project.digimagz.model.NewsModel;
 import com.project.digimagz.model.UserModel;
+import com.viewpagerindicator.CirclePageIndicator;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
@@ -59,7 +57,7 @@ public class DetailNewsActivity extends AppCompatActivity {
     private ImageButton imageButtonSendComment, imageButtonLike, imageButtonDislike;
     private WebView webViewDetailNews;
     private TextInputEditText textInputEditTextComment;
-    private RecyclerView recyclerViewComment, recyclerViewNews, recyclerViewImage;
+    private RecyclerView recyclerViewComment, recyclerViewNews;
     private MaterialToolbar materialToolbar;
 
     private LinearLayout linearLayoutShare;
@@ -74,6 +72,25 @@ public class DetailNewsActivity extends AppCompatActivity {
     private InitRetrofit initRetrofit, initRetrofitComment, initRetrofitNews, initRetrofitLike, initRetrofitView, initRetrofitShare, initRetrofitUser;
     private RecyclerViewCommentAdapter recyclerViewCommentAdapter;
     private ArrayList<UserModel> userModels = new ArrayList<>();
+
+    private RelativeLayout relativeLayoutSlider;
+    private ViewPager mPager;
+    private static int currentPage = 0;
+    private static int NUM_PAGES = 0;
+
+    private CirclePageIndicator indicator;
+
+    private Handler swiper = new Handler();
+    private Runnable swiperRunnable = new Runnable() {
+        public void run() {
+            if (currentPage == NUM_PAGES) {
+                currentPage = 0;
+            }
+            mPager.setCurrentItem(currentPage++, true);
+
+            swiper.postDelayed(this, 3000);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,9 +130,11 @@ public class DetailNewsActivity extends AppCompatActivity {
         textInputEditTextComment = findViewById(R.id.textInputEditTextComment);
         recyclerViewComment = findViewById(R.id.recyclerViewComment);
         recyclerViewNews = findViewById(R.id.recyclerViewNews);
-        recyclerViewImage = findViewById(R.id.recyclerViewImage);
         linearLayoutShare = findViewById(R.id.linearLayoutShare);
         webViewDetailNews = findViewById(R.id.webViewDetailNews);
+        relativeLayoutSlider = findViewById(R.id.relativeLayoutSlider);
+        mPager = findViewById(R.id.pagerSlider);
+        indicator = findViewById(R.id.indicatorSlider);
         //webViewDetailNews.setBackgroundColor(Color.TRANSPARENT);
 
         webViewDetailNews.getSettings().setJavaScriptEnabled(true);
@@ -143,7 +162,9 @@ public class DetailNewsActivity extends AppCompatActivity {
                     newsImage = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
                 } else if (newsModel.getNameCategory().equalsIgnoreCase("Galeri")) {
                     newsImage = Constant.URL_IMAGE_GALLERY + newsModel.getIdNews() + "/" + newsModel.getNewsImage().get(0);
-                    showRecyclerListViewImage(newsModel.getNewsImage(), newsModel.getNameCategory(), newsModel.getIdNews());
+                    relativeLayoutSlider.setVisibility(View.VISIBLE);
+                    imageViewCover.setVisibility(View.GONE);
+                    showSlider(newsModel.getNewsImage(), newsModel.getIdNews());
                 }
                 Glide.with(DetailNewsActivity.this)
                         .load(newsImage)
@@ -278,6 +299,8 @@ public class DetailNewsActivity extends AppCompatActivity {
     }
 
     private void setRecyclerView() {
+        //swiper.removeCallbacks(swiperRunnable);
+
         initRetrofitComment.getCommentFromApi(newsModel.getIdNews());
         initRetrofitComment.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
             @Override
@@ -308,13 +331,6 @@ public class DetailNewsActivity extends AppCompatActivity {
         });
     }
 
-    private void showRecyclerListViewImage(ArrayList<String> stringArrayList, String typeNews, String idNews) {
-        //recyclerViewComment.setHasFixedSize(true);
-        recyclerViewImage.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, true));
-        RecyclerViewImageAdapter recyclerViewImageAdapter = new RecyclerViewImageAdapter(stringArrayList, typeNews, idNews);
-        recyclerViewImage.setAdapter(recyclerViewImageAdapter);
-    }
-
     private void showRecyclerListViewComment(ArrayList<CommentModel> commentModelArrayList) {
         //recyclerViewComment.setHasFixedSize(true);
         recyclerViewComment.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, true));
@@ -342,6 +358,49 @@ public class DetailNewsActivity extends AppCompatActivity {
         myIntent.putExtra(Intent.EXTRA_SUBJECT, shareSub);
         myIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
         startActivity(Intent.createChooser(myIntent, "Share \"Digimagz\" via"));
+    }
+
+    private void showSlider(ArrayList<String> newsModelArrayList, String idNews) {
+        if (newsModelArrayList.size() > 0) {
+            mPager.setAdapter(new ImageSliderGalleryAdapater(newsModelArrayList, idNews));
+            indicator.setViewPager(mPager);
+
+            final float density = getResources().getDisplayMetrics().density;
+
+            //Set circle indicator radius
+            indicator.setRadius(5 * density);
+
+            NUM_PAGES = newsModelArrayList.size();
+
+            // Auto start of viewpager
+            swiper.postDelayed(swiperRunnable, 3000);
+
+            /**Timer swipeTimer = new Timer();
+             swipeTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+            handler.post(Update);
+            }
+            }, 3000, 3000);*/
+
+            indicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                    currentPage = position;
+                    Log.e("pos", String.valueOf(currentPage));
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+
+                }
+            });
+        }
     }
 
     @Override

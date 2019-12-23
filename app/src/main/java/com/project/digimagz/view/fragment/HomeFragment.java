@@ -20,20 +20,16 @@ import android.widget.RelativeLayout;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.button.MaterialButton;
 import com.project.digimagz.R;
-import com.project.digimagz.adapter.ImageSliderAdapater;
+import com.project.digimagz.adapter.ImageSliderNewsAdapater;
 import com.project.digimagz.adapter.RecyclerViewNewsAdapter;
 import com.project.digimagz.adapter.RecyclerViewStoryAdapter;
 import com.project.digimagz.api.InitRetrofit;
 import com.project.digimagz.model.NewsModel;
 import com.project.digimagz.model.StoryModel;
-import com.project.digimagz.view.activity.ErrorActivity;
 import com.project.digimagz.view.activity.ListNewsActivity;
-import com.project.digimagz.view.activity.MainActivity;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class HomeFragment extends Fragment {
 
@@ -197,7 +193,7 @@ public class HomeFragment extends Fragment {
 
     private void showSlider(ArrayList<NewsModel> newsModelArrayList) {
         if (newsModelArrayList.size() > 0) {
-            mPager.setAdapter(new ImageSliderAdapater(newsModelArrayList));
+            mPager.setAdapter(new ImageSliderNewsAdapater(newsModelArrayList));
             indicator.setViewPager(mPager);
 
             final float density = getResources().getDisplayMetrics().density;

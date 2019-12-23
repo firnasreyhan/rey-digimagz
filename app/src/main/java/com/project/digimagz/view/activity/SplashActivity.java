@@ -21,8 +21,11 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.project.digimagz.Constant;
 import com.project.digimagz.R;
+import com.project.digimagz.api.ApiClient;
+import com.project.digimagz.api.ApiInterface;
 import com.project.digimagz.api.InitRetrofit;
 import com.project.digimagz.api.NotifApi;
+import com.project.digimagz.model.DefaultStructureVideo;
 import com.project.digimagz.model.NotifValue;
 
 import java.util.ArrayList;
@@ -35,16 +38,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SplashActivity extends Activity {
 
-    private InitRetrofit initRetrofit;
-    private ArrayList<Integer> list = new ArrayList<>();
+    private ApiInterface apiInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        initRetrofit = new InitRetrofit();
-        initRetrofit.getStatusCodeFromServer();
+        apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
 
         if (getIntent().getExtras() != null){
             int id = getIntent().getIntExtra("id", 0);
@@ -74,13 +75,6 @@ public class SplashActivity extends Activity {
                         Log.d("ERROR", "Network error!");
                     }
                 });
-            }
-        });
-
-        initRetrofit.setOnRetrofitSuccess(new InitRetrofit.OnRetrofitSuccess() {
-            @Override
-            public void onSuccessGetData(ArrayList arrayList) {
-                list.addAll(arrayList);
             }
         });
 
@@ -128,19 +122,20 @@ public class SplashActivity extends Activity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (!list.isEmpty()) {
-                    if (list.get(0) != 0) {
+                apiInterface.getVideo().enqueue(new Callback<DefaultStructureVideo>() {
+                    @Override
+                    public void onResponse(Call<DefaultStructureVideo> call, Response<DefaultStructureVideo> response) {
                         startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         finish();
-                    } else {
+                    }
+
+                    @Override
+                    public void onFailure(Call<DefaultStructureVideo> call, Throwable t) {
                         startActivity(new Intent(getApplicationContext(), ErrorActivity.class));
                         finish();
                     }
-                } else {
-                    startActivity(new Intent(getApplicationContext(), ErrorActivity.class));
-                    finish();
-                }
+                });
             }
-        }, 2500);
+        }, 5000);
     }
 }
