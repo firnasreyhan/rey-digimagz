@@ -1,6 +1,7 @@
 package com.project.digimagz.api;
 
 import com.google.gson.JsonObject;
+import com.project.digimagz.model.AvatarModel;
 import com.project.digimagz.model.CommentModel;
 import com.project.digimagz.model.DefaultStructureComment;
 import com.project.digimagz.model.DefaultStructureEmagz;
@@ -14,13 +15,17 @@ import com.project.digimagz.model.LikeModel;
 import com.project.digimagz.model.UserModel;
 import com.project.digimagz.model.ViewModel;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 
 public interface ApiInterface {
@@ -92,4 +97,7 @@ public interface ApiInterface {
     @HTTP(method = "PUT", path = "user/index_put", hasBody = true)
     Call<DefaultStructureUser> putUserPhoto(@Field("email") String email, @Field("pic_url") String pic_url);
 
+    @Multipart
+    @POST("user/avatar")
+    Call<AvatarModel> postAvatar(@Part("email") RequestBody email, @Part MultipartBody.Part picture);
 }

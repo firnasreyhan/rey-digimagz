@@ -265,17 +265,17 @@ public class DetailNewsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     if (textInputEditTextComment.length() > 0) {
-                        //Toast.makeText(DetailNewsActivity.this, "Terima Kasih Atas Komentar Anda Dan Sedang Kami Moderasi", Toast.LENGTH_LONG).show();
+                        Toast.makeText(DetailNewsActivity.this, "Terima Kasih Atas Komentar Anda", Toast.LENGTH_LONG).show();
                         initRetrofit.postCommentToApi(newsModel.getIdNews(), firebaseUser.getEmail(), textInputEditTextComment.getText().toString());
 
-                        Calendar calendar = Calendar.getInstance();
-                        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//                        Calendar calendar = Calendar.getInstance();
+//                        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-                        recyclerViewCommentAdapter.add(new CommentModel(null, null,
-                                firebaseUser.getEmail(), textInputEditTextComment.getText().toString(),
-                                null, dateFormat.format(calendar.getTime()), userModels.get(0).getUserName(), userModels.get(0).getUrlPic()));
-
-                        textViewCountComment.setText(String.valueOf(Integer.parseInt(textViewCountComment.getText().toString()) + 1));
+//                        recyclerViewCommentAdapter.add(new CommentModel(null, null,
+//                                firebaseUser.getEmail(), textInputEditTextComment.getText().toString(),
+//                                null, dateFormat.format(calendar.getTime()), userModels.get(0).getUserName(), userModels.get(0).getUrlPic()));
+//
+//                        textViewCountComment.setText(String.valueOf(Integer.parseInt(textViewCountComment.getText().toString()) + 1));
 
                         textInputEditTextComment.setText("");
                     } else {

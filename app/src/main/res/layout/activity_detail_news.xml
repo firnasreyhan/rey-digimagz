@@ -130,8 +130,8 @@
                     android:gravity="bottom"
                     android:padding="10dip"
                     app:centered="true"
-                    android:layout_marginBottom="10dp"
                     app:fillColor="@android:color/white"
+                    android:background="#40000000"
                     app:pageColor="#818486"
                     app:snap="false"/>
 

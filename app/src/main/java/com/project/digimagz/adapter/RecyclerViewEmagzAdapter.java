@@ -1,5 +1,6 @@
 package com.project.digimagz.adapter;
 
+import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.DownloadListener;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -37,6 +40,7 @@ public class RecyclerViewEmagzAdapter extends RecyclerView.Adapter<RecyclerViewE
     private Context context;
     private SimpleDateFormat simpleDateFormat;
     private Date date;
+    private String urlDownload;
 
 //    private boolean isPaused = false;
 
@@ -57,6 +61,8 @@ public class RecyclerViewEmagzAdapter extends RecyclerView.Adapter<RecyclerViewE
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         final EmagzModel dataModel = emagzModelArrayList.get(position);
 
+        urlDownload = Constant.URL_DOWNLOAD_EMAGZ + dataModel.getIdEmagz();
+
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {
             date = simpleDateFormat.parse(dataModel.getDateUploaded().substring(0, 10));
@@ -74,8 +80,14 @@ public class RecyclerViewEmagzAdapter extends RecyclerView.Adapter<RecyclerViewE
 
         holder.materialButtonDownload.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 Toast.makeText(context, "Downloading...", Toast.LENGTH_SHORT).show();
+                Log.e("urlDownload", urlDownload);
+                DownloadManager downloadManager = (DownloadManager) v.getContext().getSystemService(v.getContext().DOWNLOAD_SERVICE);
+                Uri uri = Uri.parse(urlDownload);
+                DownloadManager.Request request = new DownloadManager.Request(uri);
+                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                Long aLong = downloadManager.enqueue(request);
             }
         });
     }
@@ -89,6 +101,7 @@ public class RecyclerViewEmagzAdapter extends RecyclerView.Adapter<RecyclerViewE
 
         private ImageView imageViewThumbnailEmagz;
         private MaterialButton materialButtonDownload;
+        private WebView webViewDownload;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -48,6 +48,7 @@ import com.project.digimagz.Constant;
 import com.project.digimagz.R;
 import com.project.digimagz.api.ApiClient;
 import com.project.digimagz.api.ApiInterface;
+import com.project.digimagz.model.AvatarModel;
 import com.project.digimagz.model.DefaultStructureUser;
 import com.project.digimagz.model.UserModel;
 import com.project.digimagz.view.activity.MainActivity;
@@ -70,6 +71,9 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import id.zelory.compressor.Compressor;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -155,21 +159,26 @@ public class ProfileFragment extends Fragment {
                             tvEmail.setText(userModel.get(0).getEmail());
                             tvStatus.setText(userModel.get(0).getUserType());
                             if (userModel.get(0).getUrlPic() != null) {
-                                if(Patterns.WEB_URL.matcher(userModel.get(0).getUrlPic()).matches()) {
-                                    Glide.with(Objects.requireNonNull(getActivity()))
+                                Glide.with(getActivity())
+                                            .asBitmap()
                                             .load(userModel.get(0).getUrlPic())
                                             .placeholder(R.color.chef)
                                             .into(imgProfile);
-                                }else{
-                                    byte[] imageByteArray;
-                                    imageByteArray = Base64.decode(userModel.get(0).getUrlPic(), Base64.DEFAULT);
-                                    Glide.with(getActivity())
-                                            .asBitmap()
-                                            .load(imageByteArray)
-                                            .placeholder(R.color.chef)
-                                            .into(imgProfile);
-
-                                }
+//                                if(Patterns.WEB_URL.matcher(userModel.get(0).getUrlPic()).matches()) {
+//                                    Glide.with(Objects.requireNonNull(getActivity()))
+//                                            .load(userModel.get(0).getUrlPic())
+//                                            .placeholder(R.color.chef)
+//                                            .into(imgProfile);
+//                                }else{
+//                                    byte[] imageByteArray;
+//                                    imageByteArray = Base64.decode(userModel.get(0).getUrlPic(), Base64.DEFAULT);
+//                                    Glide.with(getActivity())
+//                                            .asBitmap()
+//                                            .load(imageByteArray)
+//                                            .placeholder(R.color.chef)
+//                                            .into(imgProfile);
+//
+//                                }
                             }
                         }
 
@@ -617,61 +626,83 @@ public class ProfileFragment extends Fragment {
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
-                    apiInterface.putUser(tvEmail.getText().toString(), tvName.getText().toString(), base64, birthdate, gender).enqueue(new Callback<DefaultStructureUser>() {
+                    //RequestBody picture = RequestBody.create(MediaType.parse("image/*"), compFile.getName());
+                    MultipartBody.Part filePart = MultipartBody.Part.createFormData("picture", compFile.getName(), RequestBody.create(MediaType.parse("image/*"), compFile));
+                    RequestBody email = RequestBody.create(MediaType.parse("text/plain"), tvEmail.getText().toString());
+                    final File finalCompFile = compFile;
+                    apiInterface.postAvatar(email, filePart).enqueue(new Callback<AvatarModel>() {
                         @Override
-                        public void onResponse(@NotNull Call<DefaultStructureUser> call, @NotNull Response<DefaultStructureUser> response) {
-                            Log.e("PrifileUser", "Sukses");
-                            assert response.body() != null;
-                            ArrayList<UserModel> userModel = response.body().getData();
-                            tvName.setText(userModel.get(0).getUserName());
-                            if (userModel.get(0).getGender() != null && userModel.get(0).getDateBirth() != null) {
-                                if (userModel.get(0).getGender().equalsIgnoreCase("L")) {
-                                    tvGender.setText("Laki-laki");
-                                } else if (userModel.get(0).getGender().equalsIgnoreCase("P")) {
-                                    tvGender.setText("Perempuan");
-                                }
-                                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", new Locale("in", "ID"));
-                                try {
-                                    Date date = format.parse(userModel.get(0).getDateBirth());
-                                    SimpleDateFormat dateFormatterText = new SimpleDateFormat("dd MMMM yyyy", new Locale("in", "ID"));
-                                    tvAge.setText(dateFormatterText.format(date.getTime()));
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                Intent intent = new Intent(getContext(), UpdateProfileActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                            }
-                            tvEmail.setText(userModel.get(0).getEmail());
-                            tvStatus.setText(userModel.get(0).getUserType());
-                            if (userModel.get(0).getUrlPic() != null) {
-                                if(Patterns.WEB_URL.matcher(userModel.get(0).getUrlPic()).matches()) {
-                                    Glide.with(getActivity())
-                                            .load(userModel.get(0).getUrlPic())
-                                            .placeholder(R.color.chef)
-                                            .into(imgProfile);
-                                }else{
-                                    byte[] imageByteArray = Base64.decode(userModel.get(0).getUrlPic(), Base64.DEFAULT);
-                                    Glide.with(getActivity())
-                                            .asBitmap()
-                                            .load(imageByteArray)
-                                            .placeholder(R.color.chef)
-                                            .into(imgProfile);
-
-                                }
-                            }
+                        public void onResponse(Call<AvatarModel> call, Response<AvatarModel> response) {
+                            Log.e("Avatar", "Sukses");
                             progressBar.setVisibility(View.GONE);
+                            Glide.with(getActivity())
+                                    .asBitmap()
+                                    .load(response.body().getMessage())
+                                    .placeholder(R.color.chef)
+                                    .into(imgProfile);
                         }
 
                         @Override
-                        public void onFailure(Call<DefaultStructureUser> call, Throwable t) {
-                            if (t instanceof SocketTimeoutException) {
-                                Toast.makeText(getContext(), "Ubah profil gagal, silahkan coba lagi", Toast.LENGTH_SHORT).show();
-                                progressBar.setVisibility(View.GONE);
-                            }
+                        public void onFailure(Call<AvatarModel> call, Throwable t) {
+                            Log.e("Avatar", t.getMessage());
                         }
                     });
+//                    apiInterface.putUser(tvEmail.getText().toString(), tvName.getText().toString(), base64, birthdate, gender).enqueue(new Callback<DefaultStructureUser>() {
+//                        @Override
+//                        public void onResponse(@NotNull Call<DefaultStructureUser> call, @NotNull Response<DefaultStructureUser> response) {
+//                            Log.e("ProfileUser", "Sukses");
+//                            assert response.body() != null;
+//                            ArrayList<UserModel> userModel = response.body().getData();
+//                            tvName.setText(userModel.get(0).getUserName());
+//                            if (userModel.get(0).getGender() != null && userModel.get(0).getDateBirth() != null) {
+//                                if (userModel.get(0).getGender().equalsIgnoreCase("L")) {
+//                                    tvGender.setText("Laki-laki");
+//                                } else if (userModel.get(0).getGender().equalsIgnoreCase("P")) {
+//                                    tvGender.setText("Perempuan");
+//                                }
+//                                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", new Locale("in", "ID"));
+//                                try {
+//                                    Date date = format.parse(userModel.get(0).getDateBirth());
+//                                    SimpleDateFormat dateFormatterText = new SimpleDateFormat("dd MMMM yyyy", new Locale("in", "ID"));
+//                                    tvAge.setText(dateFormatterText.format(date.getTime()));
+//                                } catch (ParseException e) {
+//                                    e.printStackTrace();
+//                                }
+//                            } else {
+//                                Intent intent = new Intent(getContext(), UpdateProfileActivity.class);
+//                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                                startActivity(intent);
+//                            }
+//                            tvEmail.setText(userModel.get(0).getEmail());
+//                            tvStatus.setText(userModel.get(0).getUserType());
+//                            if (userModel.get(0).getUrlPic() != null) {
+//                                if(Patterns.WEB_URL.matcher(userModel.get(0).getUrlPic()).matches()) {
+//                                    Glide.with(getActivity())
+//                                            .load(userModel.get(0).getUrlPic())
+//                                            .placeholder(R.color.chef)
+//                                            .into(imgProfile);
+//                                }else{
+//                                    byte[] imageByteArray = Base64.decode(userModel.get(0).getUrlPic(), Base64.DEFAULT);
+//                                    Glide.with(getActivity())
+//                                            .asBitmap()
+//                                            .load(imageByteArray)
+//                                            .placeholder(R.color.chef)
+//                                            .into(imgProfile);
+//
+//                                }
+//                            }
+//                            progressBar.setVisibility(View.GONE);
+//                        }
+//
+//                        @Override
+//                        public void onFailure(Call<DefaultStructureUser> call, Throwable t) {
+//                            Log.e("ProfileUser", t.getMessage());
+//                            if (t instanceof SocketTimeoutException) {
+//                                Toast.makeText(getContext(), "Ubah profil gagal, silahkan coba lagi", Toast.LENGTH_SHORT).show();
+//                                progressBar.setVisibility(View.GONE);
+//                            }
+//                        }
+//                    });
                 }
             }
         }

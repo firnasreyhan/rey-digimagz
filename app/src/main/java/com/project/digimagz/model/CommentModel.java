@@ -22,8 +22,10 @@ public class CommentModel implements Serializable {
     private String userName;
     @SerializedName("PROFILEPIC_URL")
     private String profilpicUrl;
+    @SerializedName("ADMIN_REPLY")
+    private String adminReply;
 
-    public CommentModel(String idNComment, String idNews, String email, String commentText, String isApproved, String dateComment, String userName, String profilpicUrl) {
+    public CommentModel(String idNComment, String idNews, String email, String commentText, String isApproved, String dateComment, String userName, String profilpicUrl, String adminReply) {
         this.idNComment = idNComment;
         this.idNews = idNews;
         this.email = email;
@@ -32,6 +34,7 @@ public class CommentModel implements Serializable {
         this.dateComment = dateComment;
         this.userName = userName;
         this.profilpicUrl = profilpicUrl;
+        this.adminReply = adminReply;
     }
 
     public String getIdNComment() {
@@ -96,5 +99,13 @@ public class CommentModel implements Serializable {
 
     public void setProfilpicUrl(String profilpicUrl) {
         this.profilpicUrl = profilpicUrl;
+    }
+
+    public String getAdminReply() {
+        return adminReply;
+    }
+
+    public void setAdminReply(String adminReply) {
+        this.adminReply = adminReply;
     }
 }

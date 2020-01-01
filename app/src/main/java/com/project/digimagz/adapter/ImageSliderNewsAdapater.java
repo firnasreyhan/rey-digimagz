@@ -67,20 +67,24 @@ public class ImageSliderNewsAdapater extends PagerAdapter {
             e.printStackTrace();
         }
 
-        String imageUrl = "";
-        if (newsModel.getNameCategory().equalsIgnoreCase("Berita")) {
-            imageUrl = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
-        } else if (newsModel.getNameCategory().equalsIgnoreCase("Artikel")) {
-            imageUrl = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
-        } else if (newsModel.getNameCategory().equalsIgnoreCase("Galeri")) {
-            imageUrl = Constant.URL_IMAGE_GALLERY + newsModel.getIdNews() + "/" + newsModel.getNewsImage().get(0);
+        if (newsModel.getNewsImage() != null) {
+            String imageUrl = "";
+            if (newsModel.getNameCategory().equalsIgnoreCase("Berita")) {
+                imageUrl = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
+            } else if (newsModel.getNameCategory().equalsIgnoreCase("Artikel")) {
+                imageUrl = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
+            } else if (newsModel.getNameCategory().equalsIgnoreCase("Galeri")) {
+                imageUrl = Constant.URL_IMAGE_GALLERY + newsModel.getIdNews() + "/" + newsModel.getNewsImage().get(0);
+            }
+
+            Glide.with(view.getContext())
+                    .load(imageUrl)
+                    .into(imageView);
         }
 
-        Glide.with(view.getContext())
-                .load(imageUrl)
-                .into(imageView);
-
-        textViewTitle.setText(newsModel.getTitleNews());
+        if (newsModel.getTitleNews() != null) {
+            textViewTitle.setText(newsModel.getTitleNews());
+        }
         textViewDate.setText(DateFormat.getDateInstance(DateFormat.LONG, new Locale("in", "ID")).format(date));
 
         imageLayout.setOnClickListener(new View.OnClickListener() {

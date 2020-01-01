@@ -266,17 +266,17 @@ public class DetailNewsCoverStoryActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     if (textInputEditTextComment.length() > 0) {
-                        //Toast.makeText(DetailNewsCoverStoryActivity.this, "Terima Kasih Atas Komentar Anda Dan Sedang Kami Moderasi", Toast.LENGTH_LONG).show();
+                        Toast.makeText(DetailNewsCoverStoryActivity.this, "Terima Kasih Atas Komentar Anda", Toast.LENGTH_LONG).show();
                         initRetrofit.postCommentToApi(newsCoverStoryModel.getIdNews(), firebaseUser.getEmail(), textInputEditTextComment.getText().toString());
 
-                        Calendar calendar = Calendar.getInstance();
-                        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//                        Calendar calendar = Calendar.getInstance();
+//                        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-                        recyclerViewCommentAdapter.add(new CommentModel(null, null,
-                                firebaseUser.getEmail(), textInputEditTextComment.getText().toString(),
-                                null, dateFormat.format(calendar.getTime()), userModels.get(0).getUserName(), userModels.get(0).getUrlPic()));
-
-                        textViewCountComment.setText(String.valueOf(Integer.parseInt(textViewCountComment.getText().toString()) + 1));
+//                        recyclerViewCommentAdapter.add(new CommentModel(null, null,
+//                                firebaseUser.getEmail(), textInputEditTextComment.getText().toString(),
+//                                null, dateFormat.format(calendar.getTime()), userModels.get(0).getUserName(), userModels.get(0).getUrlPic()));
+//
+//                        textViewCountComment.setText(String.valueOf(Integer.parseInt(textViewCountComment.getText().toString()) + 1));
 
                         textInputEditTextComment.setText("");
                     } else {
@@ -354,7 +354,7 @@ public class DetailNewsCoverStoryActivity extends AppCompatActivity {
     private void openShare(NewsCoverStoryModel model) {
         Intent myIntent = new Intent(Intent.ACTION_SEND);
         myIntent.setType("text/plain");
-        String shareBody = model.getTitleNews() + "\n" + "http://digimagz.kristomoyo.com/news/view/" + model.getIdNews();
+        String shareBody = model.getTitleNews() + "\n" + "http://pn10mobprd.ptpn10.co.id:8598/news/view/" + model.getIdNews();
         String shareSub = "Digimagz";
         myIntent.putExtra(Intent.EXTRA_SUBJECT, shareSub);
         myIntent.putExtra(Intent.EXTRA_TEXT, shareBody);

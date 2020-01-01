@@ -43,13 +43,17 @@ public class RecyclerViewStoryAdapter extends RecyclerView.Adapter<RecyclerViewS
 
         final StoryModel storyModel = storyModelArrayList.get(position);
 
-        newsImage = Constant.URL_IMAGE_STORY + storyModel.getImageCoverStory();
+        if (storyModel.getImageCoverStory() != null) {
+            newsImage = Constant.URL_IMAGE_STORY + storyModel.getImageCoverStory();
 
-        Glide.with(holder.itemView.getContext())
-                .load(newsImage)
-                .into(holder.imageViewStory);
+            Glide.with(holder.itemView.getContext())
+                    .load(newsImage)
+                    .into(holder.imageViewStory);
+        }
 
-        holder.textViewTitle.setText(storyModel.getTitleCoverStory());
+        if (storyModel.getTitleCoverStory() != null) {
+            holder.textViewTitle.setText(storyModel.getTitleCoverStory());
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

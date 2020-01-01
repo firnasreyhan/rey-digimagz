@@ -55,12 +55,19 @@ public class RecyclerViewNewsCoverStoryAdapter extends RecyclerView.Adapter<Recy
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         final NewsCoverStoryModel newsCoverStoryModel = newsCoverStoryModelArrayList.get(position);
 
-        if (newsCoverStoryModel.getNameCategory().equalsIgnoreCase("Berita")) {
-            newsImage = Constant.URL_IMAGE_NEWS + newsCoverStoryModel.getNewsImage().get(0);
-        } else if (newsCoverStoryModel.getNameCategory().equalsIgnoreCase("Artikel")) {
-            newsImage = Constant.URL_IMAGE_NEWS + newsCoverStoryModel.getNewsImage().get(0);
-        } else if (newsCoverStoryModel.getNameCategory().equalsIgnoreCase("Galeri")) {
-            newsImage = Constant.URL_IMAGE_GALLERY + newsCoverStoryModel.getIdNews() + "/" + newsCoverStoryModel.getNewsImage().get(0);
+
+        if (newsCoverStoryModel.getNewsImage() != null) {
+            if (newsCoverStoryModel.getNameCategory().equalsIgnoreCase("Berita")) {
+                newsImage = Constant.URL_IMAGE_NEWS + newsCoverStoryModel.getNewsImage().get(0);
+            } else if (newsCoverStoryModel.getNameCategory().equalsIgnoreCase("Artikel")) {
+                newsImage = Constant.URL_IMAGE_NEWS + newsCoverStoryModel.getNewsImage().get(0);
+            } else if (newsCoverStoryModel.getNameCategory().equalsIgnoreCase("Galeri")) {
+                newsImage = Constant.URL_IMAGE_GALLERY + newsCoverStoryModel.getIdNews() + "/" + newsCoverStoryModel.getNewsImage().get(0);
+            }
+
+            Glide.with(holder.itemView.getContext())
+                    .load(newsImage)
+                    .into(holder.imageViewNews);
         }
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -89,13 +96,12 @@ public class RecyclerViewNewsCoverStoryAdapter extends RecyclerView.Adapter<Recy
             });
         }
 
-        holder.textViewTitle.setText(newsCoverStoryModel.getTitleNews());
+        if (newsCoverStoryModel.getTitleNews() != null) {
+            holder.textViewTitle.setText(newsCoverStoryModel.getTitleNews());
+        }
         holder.textViewLike.setText(String.valueOf(newsCoverStoryModel.getLikes()));
         holder.textViewComment.setText(String.valueOf(newsCoverStoryModel.getComments()));
         holder.textViewDate.setText(DateFormat.getDateInstance(DateFormat.SHORT, new Locale("in", "ID")).format(date));
-        Glide.with(holder.itemView.getContext())
-                .load(newsImage)
-                .into(holder.imageViewNews);
 
         if (newsCoverStoryModel.getCheckLike() == 1){
             holder.ivLiked.setVisibility(View.VISIBLE);

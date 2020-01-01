@@ -2,12 +2,15 @@ package com.project.digimagz.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.text.Html;
 import android.util.Base64;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -60,44 +63,26 @@ public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerVie
             e.printStackTrace();
         }
 
-        String format = null;
-        if (String.valueOf(commentModel.getProfilpicUrl()).equalsIgnoreCase("null")) {
-            if (String.valueOf(commentModel.getProfilpicUrl()).length() > 4) {
-                format = commentModel.getProfilpicUrl().substring(commentModel.getProfilpicUrl().length() - 4);
-            }
-        }
-
-//        if (format != null) {
-//            if (format.equalsIgnoreCase(".jpg") || format.equalsIgnoreCase(".png")) {
-//                Glide.with(context)
-//                        .load(commentModel.getProfilpicUrl())
-//                        .into(holder.circleImageViewComment);
-//            }
-//        }
-//        Glide.with(context)
-//                .load(commentModel.getProfilpicUrl())
-//                .into(holder.circleImageViewComment);
-
         if (commentModel.getProfilpicUrl() != null) {
-            if(Patterns.WEB_URL.matcher(commentModel.getProfilpicUrl()).matches()) {
-                Glide.with(context)
-                        .load(commentModel.getProfilpicUrl())
-                        .placeholder(R.color.chef)
-                        .into(holder.circleImageViewComment);
-            }else{
-                byte[] imageByteArray = Base64.decode(commentModel.getProfilpicUrl(), Base64.DEFAULT);
-                Glide.with(context)
-                        .asBitmap()
-                        .load(imageByteArray)
-                        .placeholder(R.color.chef)
-                        .into(holder.circleImageViewComment);
-
-            }
+            Glide.with(context)
+                    .asBitmap()
+                    .load(commentModel.getProfilpicUrl())
+                    .placeholder(R.color.chef)
+                    .into(holder.circleImageViewComment);
         }
 
         holder.textViewCommentUser.setText(commentModel.getEmail());
         holder.textViewCommentContent.setText(commentModel.getCommentText());
         holder.textViewCommentDate.setText(DateFormat.getDateInstance(DateFormat.LONG, new Locale("in", "ID")).format(date));
+
+        if (commentModel.getAdminReply() != null) {
+            holder.linearLayoutReply.setVisibility(View.VISIBLE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                holder.textViewCommentContentAdmin.setText(Html.fromHtml(commentModel.getAdminReply(), Html.FROM_HTML_MODE_COMPACT));
+            } else {
+                holder.textViewCommentContentAdmin.setText(Html.fromHtml(commentModel.getAdminReply()));
+            }
+        }
 
     }
 
@@ -115,7 +100,8 @@ public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerVie
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private CircleImageView circleImageViewComment;
-        private TextView textViewCommentUser, textViewCommentContent, textViewCommentDate;
+        private TextView textViewCommentUser, textViewCommentContent, textViewCommentDate, textViewCommentContentAdmin;
+        private LinearLayout linearLayoutReply;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -123,6 +109,8 @@ public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerVie
             textViewCommentUser = itemView.findViewById(R.id.textViewCommentUser);
             textViewCommentContent = itemView.findViewById(R.id.textViewCommentContent);
             textViewCommentDate = itemView.findViewById(R.id.textViewCommentDate);
+            textViewCommentContentAdmin = itemView.findViewById(R.id.textViewCommentContentAdmin);
+            linearLayoutReply = itemView.findViewById(R.id.linearLayoutReply);
         }
     }
 }

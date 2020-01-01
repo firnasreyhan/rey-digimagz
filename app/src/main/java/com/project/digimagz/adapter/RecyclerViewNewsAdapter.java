@@ -2,6 +2,7 @@ package com.project.digimagz.adapter;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,14 +58,6 @@ public class RecyclerViewNewsAdapter extends RecyclerView.Adapter<RecyclerViewNe
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         final NewsModel newsModel = newsModelArrayList.get(position);
 
-        if (newsModel.getNameCategory().equalsIgnoreCase("Berita")) {
-            newsImage = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
-        } else if (newsModel.getNameCategory().equalsIgnoreCase("Artikel")) {
-            newsImage = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
-        } else if (newsModel.getNameCategory().equalsIgnoreCase("Galeri")) {
-            newsImage = Constant.URL_IMAGE_GALLERY + newsModel.getIdNews() + "/" + newsModel.getNewsImage().get(0);
-        }
-
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         initRetrofitLike = new InitRetrofit();
 
@@ -90,13 +83,26 @@ public class RecyclerViewNewsAdapter extends RecyclerView.Adapter<RecyclerViewNe
             });
         }
 
-        holder.textViewTitle.setText(newsModel.getTitleNews());
+        if (newsModel.getTitleNews() != null) {
+            holder.textViewTitle.setText(newsModel.getTitleNews());
+        }
         holder.textViewLike.setText(String.valueOf(newsModel.getLikes()));
         holder.textViewComment.setText(String.valueOf(newsModel.getComments()));
         holder.textViewDate.setText(DateFormat.getDateInstance(DateFormat.SHORT, new Locale("in", "ID")).format(date));
-        Glide.with(holder.itemView.getContext())
-                .load(newsImage)
-                .into(holder.imageViewNews);
+
+        if (newsModel.getNewsImage() != null) {
+            if (newsModel.getNameCategory().equalsIgnoreCase("Berita")) {
+                newsImage = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
+            } else if (newsModel.getNameCategory().equalsIgnoreCase("Artikel")) {
+                newsImage = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
+            } else if (newsModel.getNameCategory().equalsIgnoreCase("Galeri")) {
+                newsImage = Constant.URL_IMAGE_GALLERY + newsModel.getIdNews() + "/" + newsModel.getNewsImage().get(0);
+            }
+            Log.e("newsImage", newsImage);
+            Glide.with(holder.itemView.getContext())
+                    .load(newsImage)
+                    .into(holder.imageViewNews);
+        }
 
         if (newsModel.getCheckLike() == 1){
             holder.ivLiked.setVisibility(View.VISIBLE);

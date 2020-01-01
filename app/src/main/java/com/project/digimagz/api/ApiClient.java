@@ -1,5 +1,7 @@
 package com.project.digimagz.api;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.project.digimagz.R;
 
 import java.util.concurrent.TimeUnit;
@@ -27,8 +29,12 @@ public class ApiClient {
                     .addInterceptor(httpLoggingInterceptor)
                     .build();
 
+            Gson gson = new GsonBuilder()
+                    .setLenient()
+                    .create();
+
             retrofit = new Retrofit.Builder()
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .client(okHttpClient)
                     .baseUrl("http://pn10mobprd.ptpn10.co.id:8598/api/")
                     //.baseUrl("http://digimon.kristomoyo.com/api/")

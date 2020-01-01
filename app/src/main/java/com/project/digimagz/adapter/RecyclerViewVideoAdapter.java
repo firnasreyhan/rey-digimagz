@@ -65,11 +65,19 @@ public class RecyclerViewVideoAdapter extends RecyclerView.Adapter<RecyclerViewV
 
         Log.e("date", dataModel.getDatePublished());
 
-        Glide.with(context)
-                .load(dataModel.getUrlMediumThumbnail())
-                .into(holder.imageViewThumbnailVideo);
-        holder.textViewTitle.setText(String.valueOf(dataModel.getTitle()));
-        holder.textViewDate.setText(DateFormat.getDateInstance(DateFormat.LONG, new Locale("in", "ID")).format(date));
+        if (dataModel.getUrlMediumThumbnail() != null) {
+            Glide.with(context)
+                    .load(dataModel.getUrlMediumThumbnail())
+                    .into(holder.imageViewThumbnailVideo);
+        }
+
+        if (dataModel.getTitle() != null) {
+            holder.textViewTitle.setText(dataModel.getTitle());
+        }
+
+        if (dataModel.getDatePublished() != null) {
+            holder.textViewDate.setText(DateFormat.getDateInstance(DateFormat.LONG, new Locale("in", "ID")).format(date));
+        }
 
         holder.frameLayoutVideo.setOnClickListener(new View.OnClickListener() {
             @Override
