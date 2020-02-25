@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.project.digimagz.Constant;
@@ -55,18 +57,23 @@ public class RecyclerViewNewsCoverStoryAdapter extends RecyclerView.Adapter<Recy
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         final NewsCoverStoryModel newsCoverStoryModel = newsCoverStoryModelArrayList.get(position);
 
-
         if (newsCoverStoryModel.getNewsImage() != null) {
-            if (newsCoverStoryModel.getNameCategory().equalsIgnoreCase("Berita")) {
-                newsImage = Constant.URL_IMAGE_NEWS + newsCoverStoryModel.getNewsImage().get(0);
-            } else if (newsCoverStoryModel.getNameCategory().equalsIgnoreCase("Artikel")) {
-                newsImage = Constant.URL_IMAGE_NEWS + newsCoverStoryModel.getNewsImage().get(0);
-            } else if (newsCoverStoryModel.getNameCategory().equalsIgnoreCase("Galeri")) {
-                newsImage = Constant.URL_IMAGE_GALLERY + newsCoverStoryModel.getIdNews() + "/" + newsCoverStoryModel.getNewsImage().get(0);
+            if (URLUtil.isValidUrl(newsCoverStoryModel.getNewsImage().get(0))) {
+                newsImage = newsCoverStoryModel.getNewsImage().get(0);
+            } else {
+                if (newsCoverStoryModel.getNameCategory().equalsIgnoreCase("Berita")) {
+                    newsImage = Constant.URL_IMAGE_NEWS + newsCoverStoryModel.getNewsImage().get(0);
+                } else if (newsCoverStoryModel.getNameCategory().equalsIgnoreCase("Artikel")) {
+                    newsImage = Constant.URL_IMAGE_NEWS + newsCoverStoryModel.getNewsImage().get(0);
+                } else if (newsCoverStoryModel.getNameCategory().equalsIgnoreCase("Galeri")) {
+                    newsImage = Constant.URL_IMAGE_GALLERY + newsCoverStoryModel.getIdNews() + "/" + newsCoverStoryModel.getNewsImage().get(0);
+                }
             }
-
             Glide.with(holder.itemView.getContext())
                     .load(newsImage)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .placeholder(R.drawable.mqdefault)
                     .into(holder.imageViewNews);
         }
 

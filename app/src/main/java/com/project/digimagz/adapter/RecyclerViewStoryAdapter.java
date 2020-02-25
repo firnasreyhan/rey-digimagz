@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.project.digimagz.Constant;
 import com.project.digimagz.R;
 import com.project.digimagz.model.StoryModel;
@@ -44,10 +46,16 @@ public class RecyclerViewStoryAdapter extends RecyclerView.Adapter<RecyclerViewS
         final StoryModel storyModel = storyModelArrayList.get(position);
 
         if (storyModel.getImageCoverStory() != null) {
-            newsImage = Constant.URL_IMAGE_STORY + storyModel.getImageCoverStory();
-
+            if (URLUtil.isValidUrl(storyModel.getImageCoverStory())) {
+                newsImage = storyModel.getImageCoverStory();
+            } else {
+                newsImage = Constant.URL_IMAGE_STORY + storyModel.getImageCoverStory();
+            }
             Glide.with(holder.itemView.getContext())
                     .load(newsImage)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .placeholder(R.drawable.mqdefault)
                     .into(holder.imageViewStory);
         }
 

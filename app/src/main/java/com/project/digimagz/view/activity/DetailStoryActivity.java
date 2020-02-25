@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.project.digimagz.Constant;
 import com.project.digimagz.R;
@@ -67,6 +68,8 @@ public class DetailStoryActivity extends AppCompatActivity {
         newsImage = Constant.URL_IMAGE_STORY + storyModel.getImageCoverStory();
         Glide.with(this)
                 .load(newsImage)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .into(imageViewCover);
 
         setRecyclerView();

@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
+import android.webkit.URLUtil;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -69,7 +71,7 @@ public class DetailNewsActivity extends AppCompatActivity {
     private Date date;
     private String newsImage, dataHtml;
 
-    private InitRetrofit initRetrofit, initRetrofitComment, initRetrofitNews, initRetrofitLike, initRetrofitView, initRetrofitShare, initRetrofitUser;
+    private InitRetrofit initRetrofit, initRetrofitComment, initRetrofitNews, initRetrofitLike, initRetrofitView, initRetrofitShare, initRetrofitUser, initRetrofitSearch;
     private RecyclerViewCommentAdapter recyclerViewCommentAdapter;
     private ArrayList<UserModel> userModels = new ArrayList<>();
 
@@ -92,14 +94,18 @@ public class DetailNewsActivity extends AppCompatActivity {
         }
     };
 
+    private boolean notif = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_news);
 
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         object = getIntent().getSerializableExtra(RecyclerViewNewsAdapter.INTENT_PARAM_KEY_NEWS_DATA);
         newsModel = (NewsModel) object;
+        notif = getIntent().getBooleanExtra("notif", false);
 
         materialToolbar = findViewById(R.id.materialToolbar);
         setSupportActionBar(materialToolbar);
@@ -114,6 +120,7 @@ public class DetailNewsActivity extends AppCompatActivity {
         initRetrofitView = new InitRetrofit();
         initRetrofitShare = new InitRetrofit();
         initRetrofitUser = new InitRetrofit();
+        initRetrofitSearch = new InitRetrofit();
 
         textViewTitle = findViewById(R.id.textViewTitle);
         textViewDate = findViewById(R.id.textViewDate);
@@ -135,8 +142,8 @@ public class DetailNewsActivity extends AppCompatActivity {
         relativeLayoutSlider = findViewById(R.id.relativeLayoutSlider);
         mPager = findViewById(R.id.pagerSlider);
         indicator = findViewById(R.id.indicatorSlider);
-        //webViewDetailNews.setBackgroundColor(Color.TRANSPARENT);
 
+        //webViewDetailNews.setBackgroundColor(Color.TRANSPARENT);
         webViewDetailNews.getSettings().setJavaScriptEnabled(true);
         webViewDetailNews.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         webViewDetailNews.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
@@ -148,27 +155,32 @@ public class DetailNewsActivity extends AppCompatActivity {
         webViewDetailNews.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         webViewDetailNews.getSettings().setBuiltInZoomControls(false);
 
-        try {
-            date = simpleDateFormat.parse(newsModel.getDateNews());
-        } catch (ParseException e) {
-            e.printStackTrace();
+        if (newsModel.getDateNews() != null) {
+            try {
+                date = simpleDateFormat.parse(newsModel.getDateNews());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
 
         if (newsModel.getNewsImage() != null) {
             if (!newsModel.getNewsImage().isEmpty()) {
-                if (newsModel.getNameCategory().equalsIgnoreCase("Berita")) {
-                    newsImage = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
-                } else if (newsModel.getNameCategory().equalsIgnoreCase("Artikel")) {
-                    newsImage = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
-                } else if (newsModel.getNameCategory().equalsIgnoreCase("Galeri")) {
-                    newsImage = Constant.URL_IMAGE_GALLERY + newsModel.getIdNews() + "/" + newsModel.getNewsImage().get(0);
+                if (newsModel.getNameCategory().equalsIgnoreCase("Galeri")) {
                     relativeLayoutSlider.setVisibility(View.VISIBLE);
                     imageViewCover.setVisibility(View.GONE);
                     showSlider(newsModel.getNewsImage(), newsModel.getIdNews());
+                } else {
+                    if (URLUtil.isValidUrl(newsModel.getNewsImage().get(0))) {
+                        newsImage = newsModel.getNewsImage().get(0);
+                    } else {
+                        newsImage = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
+                    }
+                    Glide.with(DetailNewsActivity.this)
+                            .load(newsImage)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .skipMemoryCache(true)
+                            .into(imageViewCover);
                 }
-                Glide.with(DetailNewsActivity.this)
-                        .load(newsImage)
-                        .into(imageViewCover);
             }
         }
 
@@ -206,8 +218,6 @@ public class DetailNewsActivity extends AppCompatActivity {
         setRecyclerView();
 
         if (firebaseUser != null) {
-            imageButtonLike.setEnabled(true);
-            imageButtonDislike.setEnabled(true);
             imageButtonSendComment.setEnabled(true);
             textInputEditTextComment.setEnabled(true);
 
@@ -228,9 +238,13 @@ public class DetailNewsActivity extends AppCompatActivity {
                 @Override
                 public void onSuccessGetData(ArrayList arrayList) {
                     if (arrayList.get(0).equals("Yes")) {
+                        imageButtonLike.setEnabled(true);
+                        imageButtonDislike.setEnabled(true);
                         imageButtonDislike.setVisibility(View.VISIBLE);
                         imageButtonLike.setVisibility(View.GONE);
                     } else if (arrayList.get(0).equals("No")){
+                        imageButtonLike.setEnabled(true);
+                        imageButtonDislike.setEnabled(true);
                         imageButtonDislike.setVisibility(View.GONE);
                         imageButtonLike.setVisibility(View.VISIBLE);
                     }
@@ -353,11 +367,12 @@ public class DetailNewsActivity extends AppCompatActivity {
     private void openShare(NewsModel model) {
         Intent myIntent = new Intent(Intent.ACTION_SEND);
         myIntent.setType("text/plain");
-        String shareBody = model.getTitleNews() + "\n" + "http://pn10mobprd.ptpn10.co.id:8598/news/view/" + model.getIdNews();
+        String shareBody = model.getTitleNews() + "\n" + "https://pn10mobprd.ptpn10.co.id:8598/news/view/" + model.getIdNews();
+        //String shareBody = model.getTitleNews() + "\n" + "http://digimon.kristomoyo.com/news/view/" + model.getIdNews();
         String shareSub = "Digimagz";
         myIntent.putExtra(Intent.EXTRA_SUBJECT, shareSub);
         myIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
-        startActivity(Intent.createChooser(myIntent, "Share \"Digimagz\" via"));
+        startActivityForResult(Intent.createChooser(myIntent, "Share \"Digimagz\" via"), 0);
     }
 
     private void showSlider(ArrayList<String> newsModelArrayList, String idNews) {
@@ -411,16 +426,33 @@ public class DetailNewsActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        onBackPressed();
+        if (notif) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        } else {
+            onBackPressed();
+        }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (notif) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (firebaseUser != null) {
-                initRetrofitShare.postShareToApi(newsModel.getIdNews(), firebaseUser.getEmail());
+        if (requestCode == 0) {
+            if (resultCode == RESULT_OK) {
+                if (firebaseUser != null) {
+                    initRetrofitShare.postShareToApi(newsModel.getIdNews(), firebaseUser.getEmail());
+                }
             }
         }
     }

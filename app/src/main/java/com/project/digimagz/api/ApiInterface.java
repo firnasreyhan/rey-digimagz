@@ -8,8 +8,10 @@ import com.project.digimagz.model.DefaultStructureEmagz;
 import com.project.digimagz.model.DefaultStructureLike;
 import com.project.digimagz.model.DefaultStructureNews;
 import com.project.digimagz.model.DefaultStructureNewsCoverStory;
+import com.project.digimagz.model.DefaultStructureNewsSearch;
 import com.project.digimagz.model.DefaultStructureStory;
 import com.project.digimagz.model.DefaultStructureUser;
+import com.project.digimagz.model.DefaultStructureVersion;
 import com.project.digimagz.model.DefaultStructureVideo;
 import com.project.digimagz.model.LikeModel;
 import com.project.digimagz.model.UserModel;
@@ -26,6 +28,7 @@ import retrofit2.http.HTTP;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiInterface {
@@ -35,6 +38,9 @@ public interface ApiInterface {
 
     @GET("dummy/index_get")
     Call<DefaultStructureNews> getNewsSearch(@Query("q") String params);
+
+    @GET("dummy/news/{id_news}")
+    Call<DefaultStructureNewsSearch> getNewsParam(@Path("id_news") String idNews);
 
     @GET("dummy/index_get")
     Call<DefaultStructureNews> getNewsTrending(@Query("trend") String params);
@@ -65,6 +71,9 @@ public interface ApiInterface {
 
     @GET("video/index_get")
     Call<DefaultStructureVideo> getVideo();
+
+    @GET("dummy/version")
+    Call<DefaultStructureVersion> getVersion();
 
     @POST("comments/index_post")
     Call<CommentModel> postComment(@Body JsonObject jsonObject);

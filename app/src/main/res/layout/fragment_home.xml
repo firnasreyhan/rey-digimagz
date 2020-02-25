@@ -22,19 +22,20 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginLeft="16dp">
+                android:orientation="vertical"
+                tools:visibility="visible">
 
                 <com.facebook.shimmer.ShimmerFrameLayout
                     android:id="@+id/shimmerFrameLayoutSlider"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_marginBottom="20dp"
                     android:orientation="vertical"
-                    app:shimmer_duration="800"
-                    android:layout_marginBottom="20dp">
+                    app:shimmer_duration="800">
 
                     <!-- Adding 10 rows of placeholders -->
                     <LinearLayout
@@ -72,67 +73,74 @@
                         app:centered="true"
                         app:fillColor="@android:color/white"
                         app:pageColor="#818486"
-                        app:snap="false"/>
+                        app:snap="false" />
 
                 </RelativeLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Trending"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                    android:layout_marginBottom="10dp"/>
+                    android:orientation="vertical">
 
-                <com.facebook.shimmer.ShimmerFrameLayout
-                    android:id="@+id/shimmerFrameLayoutTranding"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:orientation="vertical"
-                    app:shimmer_duration="800">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:text="Berita"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-                    <!-- Adding 10 rows of placeholders -->
-                    <LinearLayout
+                    <com.facebook.shimmer.ShimmerFrameLayout
+                        android:id="@+id/shimmerFrameLayoutNews"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:orientation="vertical"
+                        app:shimmer_duration="800">
+
+                        <!-- Adding 10 rows of placeholders -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <include layout="@layout/list_placeholder_news" />
+
+                            <include layout="@layout/list_placeholder_news" />
+
+                            <include layout="@layout/list_placeholder_news" />
+
+                            <include layout="@layout/list_placeholder_news" />
+
+                            <include layout="@layout/list_placeholder_news" />
+
+                            <include layout="@layout/list_placeholder_news" />
+
+                            <include layout="@layout/list_placeholder_news" />
+
+                            <include layout="@layout/list_placeholder_news" />
+
+                            <include layout="@layout/list_placeholder_news" />
+
+                            <include layout="@layout/list_placeholder_news" />
+
+                        </LinearLayout>
+
+                    </com.facebook.shimmer.ShimmerFrameLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recylcerViewNews"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:layout_marginBottom="16dp" />
 
-                        <include layout="@layout/list_placeholder_news" />
-
-                        <include layout="@layout/list_placeholder_news" />
-
-                        <include layout="@layout/list_placeholder_news" />
-
-                    </LinearLayout>
-
-                </com.facebook.shimmer.ShimmerFrameLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recylerViewTranding"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/materialButtonMoreTrending"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAllCaps="false"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    app:strokeColor="@color/colorPrimary"
-                    app:strokeWidth="1dp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:text="Lihat Lainnya"
-                    android:visibility="gone"/>
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
                     android:text="Cover Story"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                    android:layout_marginBottom="10dp"/>
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
             </LinearLayout>
 
@@ -175,20 +183,20 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginRight="16dp"
                 android:layout_marginBottom="10dp"
-                android:layout_marginLeft="16dp">
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Berita"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                    android:layout_marginBottom="10dp"/>
+                    android:layout_marginBottom="10dp"
+                    android:text="Trending"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
                 <com.facebook.shimmer.ShimmerFrameLayout
-                    android:id="@+id/shimmerFrameLayoutNews"
+                    android:id="@+id/shimmerFrameLayoutTranding"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -207,29 +215,31 @@
 
                         <include layout="@layout/list_placeholder_news" />
 
-                        <include layout="@layout/list_placeholder_news" />
-
-                        <include layout="@layout/list_placeholder_news" />
-
-                        <include layout="@layout/list_placeholder_news" />
-
-                        <include layout="@layout/list_placeholder_news" />
-
-                        <include layout="@layout/list_placeholder_news" />
-
-                        <include layout="@layout/list_placeholder_news" />
-
-                        <include layout="@layout/list_placeholder_news" />
-
                     </LinearLayout>
 
                 </com.facebook.shimmer.ShimmerFrameLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recylcerViewNews"
+                    android:id="@+id/recylerViewTranding"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </androidx.recyclerview.widget.RecyclerView>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/materialButtonMoreTrending"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"/>
+                    android:layout_marginBottom="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:text="Lihat Lainnya"
+                    android:textAllCaps="false"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:visibility="gone"
+                    app:strokeColor="@color/colorPrimary"
+                    app:strokeWidth="1dp" />
 
             </LinearLayout>
 

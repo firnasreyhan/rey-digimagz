@@ -41,9 +41,11 @@ public class FirebaseMessaging extends FirebaseMessagingService {
         Map<String, String> data = rm.getData();
         String textTitle = data.get("title");
         String textContent = data.get("body");
+        String textId = data.get("id_news");
 
         Intent activityIntent = new Intent(this, SplashActivity.class);
         activityIntent.putExtra("id", rand);
+        activityIntent.putExtra("id_news", textId);
         PendingIntent pendingActivity = PendingIntent.getActivity(this, 1, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

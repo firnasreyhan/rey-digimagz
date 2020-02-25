@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.project.digimagz.Constant;
 import com.project.digimagz.R;
 import com.project.digimagz.model.NewsModel;
@@ -54,11 +56,19 @@ public class ImageSliderGalleryAdapater extends PagerAdapter {
         assert imageLayout != null;
         final ImageView imageView = imageLayout.findViewById(R.id.imageViewImage);
 
-        newsImage = Constant.URL_IMAGE_GALLERY + idNews + "/" + stringArrayList.get(position);
-
-        Glide.with(view.getContext())
-                .load(newsImage)
-                .into(imageView);
+        if (stringArrayList.get(position) != null) {
+            if (URLUtil.isValidUrl(stringArrayList.get(position))) {
+                newsImage = stringArrayList.get(position);
+            } else {
+                newsImage = Constant.URL_IMAGE_GALLERY + idNews + "/" + stringArrayList.get(position);
+            }
+            Glide.with(view.getContext())
+                    .load(newsImage)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .placeholder(R.drawable.mqdefault)
+                    .into(imageView);
+        }
 
         view.addView(imageLayout, 0);
 

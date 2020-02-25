@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,12 +20,16 @@ import androidx.core.content.ContextCompat;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.project.digimagz.BuildConfig;
 import com.project.digimagz.Constant;
 import com.project.digimagz.R;
+import com.project.digimagz.adapter.RecyclerViewNewsAdapter;
 import com.project.digimagz.api.ApiClient;
 import com.project.digimagz.api.ApiInterface;
 import com.project.digimagz.api.InitRetrofit;
 import com.project.digimagz.api.NotifApi;
+import com.project.digimagz.model.DefaultStructureNewsSearch;
+import com.project.digimagz.model.DefaultStructureVersion;
 import com.project.digimagz.model.DefaultStructureVideo;
 import com.project.digimagz.model.NotifValue;
 
@@ -39,6 +44,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class SplashActivity extends Activity {
 
     private ApiInterface apiInterface;
+    private TextView textViewVersion;
+    private String id_news;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,11 +53,18 @@ public class SplashActivity extends Activity {
         setContentView(R.layout.activity_splash);
 
         apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
+        textViewVersion = findViewById(R.id.textViewVersion);
+
+        textViewVersion.setText("Version " + BuildConfig.VERSION_NAME);
 
         if (getIntent().getExtras() != null){
             int id = getIntent().getIntExtra("id", 0);
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancel(id);
+            id_news = getIntent().getStringExtra("id_news");
+            if (id_news != null) {
+                Log.e("id_news_notif", id_news);
+            }
         }
 
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
@@ -87,7 +101,22 @@ public class SplashActivity extends Activity {
         if(!hasPermissions(PERMISSIONS)){
             ActivityCompat.requestPermissions(this, PERMISSIONS, 0);
         }else {
-            goToMain();
+            apiInterface.getVersion().enqueue(new Callback<DefaultStructureVersion>() {
+                @Override
+                public void onResponse(Call<DefaultStructureVersion> call, Response<DefaultStructureVersion> response) {
+                    assert response.body() != null;
+                    if (response.body().getData().getVersion().equalsIgnoreCase(BuildConfig.VERSION_NAME)) {
+                        goToMain();
+                    } else {
+                        startActivity(new Intent(SplashActivity.this, UpdateActivity.class));
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<DefaultStructureVersion> call, Throwable t) {
+                    Log.e("version", t.getMessage());
+                }
+            });
         }
     }
 
@@ -125,8 +154,26 @@ public class SplashActivity extends Activity {
                 apiInterface.getVideo().enqueue(new Callback<DefaultStructureVideo>() {
                     @Override
                     public void onResponse(Call<DefaultStructureVideo> call, Response<DefaultStructureVideo> response) {
-                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                        finish();
+                        if (id_news == null) {
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            finish();
+                        } else {
+                            apiInterface.getNewsParam(id_news).enqueue(new Callback<DefaultStructureNewsSearch>() {
+                                @Override
+                                public void onResponse(Call<DefaultStructureNewsSearch> call, Response<DefaultStructureNewsSearch> response) {
+                                    Intent intent = new Intent(getApplicationContext(), DetailNewsActivity.class);
+                                    intent.putExtra(RecyclerViewNewsAdapter.INTENT_PARAM_KEY_NEWS_DATA, response.body().getData());
+                                    intent.putExtra("notif", true);
+                                    startActivity(intent);
+                                    finish();
+                                }
+
+                                @Override
+                                public void onFailure(Call<DefaultStructureNewsSearch> call, Throwable t) {
+                                    Log.e("ErrorGetSearch", t.getMessage());
+                                }
+                            });
+                        }
                     }
 
                     @Override

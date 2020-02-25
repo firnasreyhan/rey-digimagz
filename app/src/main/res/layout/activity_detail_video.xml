@@ -7,19 +7,14 @@
     android:background="@android:color/black"
     tools:context=".view.activity.DetailVideoActivity">
 
-    <WebView
-        android:id="@+id/webViewVideo"
+    <com.google.android.youtube.player.YouTubePlayerView
+        android:id="@+id/player"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:ignore="MissingConstraints"/>
-
-    <ProgressBar
-        android:id="@+id/progressBarVideo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

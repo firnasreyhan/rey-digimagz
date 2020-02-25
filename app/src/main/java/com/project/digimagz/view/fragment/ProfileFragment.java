@@ -37,6 +37,7 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -163,6 +164,8 @@ public class ProfileFragment extends Fragment {
                                             .asBitmap()
                                             .load(userModel.get(0).getUrlPic())
                                             .placeholder(R.color.chef)
+                                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                            .skipMemoryCache(true)
                                             .into(imgProfile);
 //                                if(Patterns.WEB_URL.matcher(userModel.get(0).getUrlPic()).matches()) {
 //                                    Glide.with(Objects.requireNonNull(getActivity()))
@@ -639,6 +642,8 @@ public class ProfileFragment extends Fragment {
                                     .asBitmap()
                                     .load(response.body().getMessage())
                                     .placeholder(R.color.chef)
+                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                    .skipMemoryCache(true)
                                     .into(imgProfile);
                         }
 

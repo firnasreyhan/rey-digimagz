@@ -3,9 +3,11 @@ package com.project.digimagz.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.project.digimagz.Constant;
 import com.project.digimagz.R;
 import com.project.digimagz.model.NewsModel;
@@ -69,16 +72,22 @@ public class ImageSliderNewsAdapater extends PagerAdapter {
 
         if (newsModel.getNewsImage() != null) {
             String imageUrl = "";
-            if (newsModel.getNameCategory().equalsIgnoreCase("Berita")) {
-                imageUrl = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
-            } else if (newsModel.getNameCategory().equalsIgnoreCase("Artikel")) {
-                imageUrl = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
-            } else if (newsModel.getNameCategory().equalsIgnoreCase("Galeri")) {
-                imageUrl = Constant.URL_IMAGE_GALLERY + newsModel.getIdNews() + "/" + newsModel.getNewsImage().get(0);
+            if (URLUtil.isValidUrl(newsModel.getNewsImage().get(0))) {
+                imageUrl = newsModel.getNewsImage().get(0);
+            } else {
+                if (newsModel.getNameCategory().equalsIgnoreCase("Berita")) {
+                    imageUrl = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
+                } else if (newsModel.getNameCategory().equalsIgnoreCase("Artikel")) {
+                    imageUrl = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
+                } else if (newsModel.getNameCategory().equalsIgnoreCase("Galeri")) {
+                    imageUrl = Constant.URL_IMAGE_GALLERY + newsModel.getIdNews() + "/" + newsModel.getNewsImage().get(0);
+                }
             }
-
             Glide.with(view.getContext())
                     .load(imageUrl)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .placeholder(R.drawable.mqdefault)
                     .into(imageView);
         }
 

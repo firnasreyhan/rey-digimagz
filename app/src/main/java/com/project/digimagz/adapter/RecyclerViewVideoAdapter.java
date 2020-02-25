@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.button.MaterialButton;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 import com.project.digimagz.R;
@@ -68,6 +69,9 @@ public class RecyclerViewVideoAdapter extends RecyclerView.Adapter<RecyclerViewV
         if (dataModel.getUrlMediumThumbnail() != null) {
             Glide.with(context)
                     .load(dataModel.getUrlMediumThumbnail())
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .placeholder(R.drawable.mqdefault)
                     .into(holder.imageViewThumbnailVideo);
         }
 

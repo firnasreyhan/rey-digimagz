@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
+import android.webkit.URLUtil;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -24,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -150,27 +152,32 @@ public class DetailNewsCoverStoryActivity extends AppCompatActivity {
         webViewDetailNews.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         webViewDetailNews.getSettings().setBuiltInZoomControls(false);
 
-        try {
-            date = simpleDateFormat.parse(newsCoverStoryModel.getDateNews());
-        } catch (ParseException e) {
-            e.printStackTrace();
+        if (newsCoverStoryModel != null) {
+            try {
+                date = simpleDateFormat.parse(newsCoverStoryModel.getDateNews());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
 
         if (newsCoverStoryModel.getNewsImage() != null) {
             if (!newsCoverStoryModel.getNewsImage().isEmpty()) {
-                if (newsCoverStoryModel.getNameCategory().equalsIgnoreCase("Berita")) {
-                    newsImage = Constant.URL_IMAGE_NEWS + newsCoverStoryModel.getNewsImage().get(0);
-                } else if (newsCoverStoryModel.getNameCategory().equalsIgnoreCase("Artikel")) {
-                    newsImage = Constant.URL_IMAGE_NEWS + newsCoverStoryModel.getNewsImage().get(0);
-                } else if (newsCoverStoryModel.getNameCategory().equalsIgnoreCase("Galeri")) {
-                    newsImage = Constant.URL_IMAGE_GALLERY + newsCoverStoryModel.getIdNews() + "/" + newsCoverStoryModel.getNewsImage().get(0);
+                if (newsCoverStoryModel.getNameCategory().equalsIgnoreCase("Galeri")) {
                     relativeLayoutSlider.setVisibility(View.VISIBLE);
                     imageViewCover.setVisibility(View.GONE);
                     showSlider(newsCoverStoryModel.getNewsImage(), newsCoverStoryModel.getIdNews());
+                } else {
+                    if (URLUtil.isValidUrl(newsCoverStoryModel.getNewsImage().get(0))) {
+                        newsImage = newsCoverStoryModel.getNewsImage().get(0);
+                    } else {
+                        newsImage = Constant.URL_IMAGE_NEWS + newsCoverStoryModel.getNewsImage().get(0);
+                    }
+                    Glide.with(DetailNewsCoverStoryActivity.this)
+                            .load(newsImage)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .skipMemoryCache(true)
+                            .into(imageViewCover);
                 }
-                Glide.with(DetailNewsCoverStoryActivity.this)
-                        .load(newsImage)
-                        .into(imageViewCover);
             }
         }
 
@@ -209,8 +216,6 @@ public class DetailNewsCoverStoryActivity extends AppCompatActivity {
         setRecyclerView();
 
         if (firebaseUser != null) {
-            imageButtonLike.setEnabled(true);
-            imageButtonDislike.setEnabled(true);
             imageButtonSendComment.setEnabled(true);
             textInputEditTextComment.setEnabled(true);
 
@@ -231,9 +236,13 @@ public class DetailNewsCoverStoryActivity extends AppCompatActivity {
                 @Override
                 public void onSuccessGetData(ArrayList arrayList) {
                     if (arrayList.get(0).equals("Yes")) {
+                        imageButtonLike.setEnabled(true);
+                        imageButtonDislike.setEnabled(true);
                         imageButtonDislike.setVisibility(View.VISIBLE);
                         imageButtonLike.setVisibility(View.GONE);
                     } else if (arrayList.get(0).equals("No")){
+                        imageButtonLike.setEnabled(true);
+                        imageButtonDislike.setEnabled(true);
                         imageButtonDislike.setVisibility(View.GONE);
                         imageButtonLike.setVisibility(View.VISIBLE);
                     }
@@ -354,11 +363,12 @@ public class DetailNewsCoverStoryActivity extends AppCompatActivity {
     private void openShare(NewsCoverStoryModel model) {
         Intent myIntent = new Intent(Intent.ACTION_SEND);
         myIntent.setType("text/plain");
-        String shareBody = model.getTitleNews() + "\n" + "http://pn10mobprd.ptpn10.co.id:8598/news/view/" + model.getIdNews();
+        String shareBody = model.getTitleNews() + "\n" + "https://pn10mobprd.ptpn10.co.id:8598/news/view/" + model.getIdNews();
+        //String shareBody = model.getTitleNews() + "\n" + "https://digimon.kristomoyo.com/news/view/" + model.getIdNews();
         String shareSub = "Digimagz";
         myIntent.putExtra(Intent.EXTRA_SUBJECT, shareSub);
         myIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
-        startActivity(Intent.createChooser(myIntent, "Share \"Digimagz\" via"));
+        startActivityForResult(Intent.createChooser(myIntent, "Share \"Digimagz\" via"), 0);
     }
 
     private void showSlider(ArrayList<String> newsModelArrayList, String idNews) {
@@ -421,9 +431,11 @@ public class DetailNewsCoverStoryActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (firebaseUser != null) {
-                initRetrofitShare.postShareToApi(newsCoverStoryModel.getIdNews(), firebaseUser.getEmail());
+        if (requestCode == 0) {
+            if (resultCode == RESULT_OK) {
+                if (firebaseUser != null) {
+                    initRetrofitShare.postShareToApi(newsCoverStoryModel.getIdNews(), firebaseUser.getEmail());
+                }
             }
         }
     }

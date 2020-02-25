@@ -9,6 +9,7 @@ import com.project.digimagz.model.DefaultStructureEmagz;
 import com.project.digimagz.model.DefaultStructureLike;
 import com.project.digimagz.model.DefaultStructureNews;
 import com.project.digimagz.model.DefaultStructureNewsCoverStory;
+import com.project.digimagz.model.DefaultStructureNewsSearch;
 import com.project.digimagz.model.DefaultStructureStory;
 import com.project.digimagz.model.DefaultStructureUser;
 import com.project.digimagz.model.DefaultStructureVideo;
@@ -80,6 +81,26 @@ public class InitRetrofit {
             @Override
             public void onFailure(@NotNull Call<DefaultStructureNews> call, @NotNull Throwable t) {
                 Log.e("getNewsFromApi", Objects.requireNonNull(t.getMessage()));
+            }
+        });
+    }
+
+    public void getNewsFromApiWithSearch(String idNews) {
+        apiInterface.getNewsParam(idNews).enqueue(new Callback<DefaultStructureNewsSearch>() {
+            @Override
+            public void onResponse(Call<DefaultStructureNewsSearch> call, Response<DefaultStructureNewsSearch> response) {
+                ArrayList<NewsModel> list = new ArrayList<>();
+                if (response.code() == 200) {
+                    assert  response.body() != null;
+                    list.add(response.body().getData());
+                    Log.e("getNewsFromApiSearch", String.valueOf(list.size()));
+                }
+                onRetrofitSuccess.onSuccessGetData(list);
+            }
+
+            @Override
+            public void onFailure(Call<DefaultStructureNewsSearch> call, Throwable t) {
+                Log.e("getNewsFromApiSearch", Objects.requireNonNull(t.getMessage()));
             }
         });
     }

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.project.digimagz.Constant;
@@ -91,16 +93,23 @@ public class RecyclerViewNewsAdapter extends RecyclerView.Adapter<RecyclerViewNe
         holder.textViewDate.setText(DateFormat.getDateInstance(DateFormat.SHORT, new Locale("in", "ID")).format(date));
 
         if (newsModel.getNewsImage() != null) {
-            if (newsModel.getNameCategory().equalsIgnoreCase("Berita")) {
-                newsImage = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
-            } else if (newsModel.getNameCategory().equalsIgnoreCase("Artikel")) {
-                newsImage = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
-            } else if (newsModel.getNameCategory().equalsIgnoreCase("Galeri")) {
-                newsImage = Constant.URL_IMAGE_GALLERY + newsModel.getIdNews() + "/" + newsModel.getNewsImage().get(0);
+            if (URLUtil.isValidUrl(newsModel.getNewsImage().get(0))) {
+                newsImage = newsModel.getNewsImage().get(0);
+            } else {
+                if (newsModel.getNameCategory().equalsIgnoreCase("Berita")) {
+                    newsImage = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
+                } else if (newsModel.getNameCategory().equalsIgnoreCase("Artikel")) {
+                    newsImage = Constant.URL_IMAGE_NEWS + newsModel.getNewsImage().get(0);
+                } else if (newsModel.getNameCategory().equalsIgnoreCase("Galeri")) {
+                    newsImage = Constant.URL_IMAGE_GALLERY + newsModel.getIdNews() + "/" + newsModel.getNewsImage().get(0);
+                }
+                Log.e("newsImage", newsImage);
             }
-            Log.e("newsImage", newsImage);
             Glide.with(holder.itemView.getContext())
                     .load(newsImage)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .placeholder(R.drawable.mqdefault)
                     .into(holder.imageViewNews);
         }
 

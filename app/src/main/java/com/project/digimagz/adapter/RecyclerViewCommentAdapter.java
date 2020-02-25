@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.project.digimagz.R;
 import com.project.digimagz.model.CommentModel;
 import com.project.digimagz.model.NewsModel;
@@ -68,6 +69,8 @@ public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerVie
                     .asBitmap()
                     .load(commentModel.getProfilpicUrl())
                     .placeholder(R.color.chef)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
                     .into(holder.circleImageViewComment);
         }
 
